@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 
-#include "BloodlustAwakening/Actors/Interface/CppEntity.h"
 #include "BloodlustAwakening/Core/Team/CppTeam.h"
+#include "BloodlustAwakening/Interface/CppEntity.h"
 
 #include "CppTeamSubsystem.generated.h"
 
@@ -15,6 +15,11 @@ class BLOODLUSTAWAKENING_API UCppTeamSubsystem : public UWorldSubsystem
 private:
 	TArray<UCppTeam*> Teams;
 	TArray<UCppTeamLink*> Links;
+
+private:
+	bool ResolveRelationship(TScriptInterface<ICppEntity> InFirstEntity,
+		TScriptInterface<ICppEntity> InSecondEntity,
+		ECppTeamRelationship& OutRelationship) const;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Team")

@@ -8,15 +8,26 @@
 
 #include "CppStatsComponent.generated.h"
 
-UCLASS(BlueprintType, ClassGroup = "BloodlustAwakening")
-class BLOODLUSTAWAKENING_API UCppStatsComponent : public UActorComponent
+USTRUCT()
+struct FCppStatsCache
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY()
-	TArray<FCppStatsDatabaseRowView> LoadedStats;
+	TObjectPtr<UDataTable> Database;
+	FCppStats* Stats;
+};
+
+UCLASS(BlueprintType, ClassGroup = "BloodlustAwakening")
+class BLOODLUSTAWAKENING_API UCppStatsComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+private:
+	TMap<ECppStatsType, FCppStatsCache> CachedStats;
 
 public:
-	FCppStats* GetStats(UClass* InClass, ECppStatsType InType);
+	void CacheStats(ECppStatsType InType, UDataTable* InDatabase, FCppStats* InStats);
+	FCppStats* GetCachedStats(ECppStatsType InType) const;
 };

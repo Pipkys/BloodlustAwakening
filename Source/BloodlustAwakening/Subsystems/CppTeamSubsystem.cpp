@@ -5,91 +5,114 @@ UCppTeam* UCppTeamSubsystem::GetTeam(const FName& InName)
 	UCppTeam** Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; });
 	if (!Found)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::GetTeam: Team '%s' not found"), InName.ToString().GetCharArray().GetData());
+		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::GetTeam: Team '%s' not found"), *InName.ToString());
 		return nullptr;
 	}
-	else
-	{
-		return *Found;
-	}
+	return *Found;
 }
 
 UCppTeamLink* UCppTeamSubsystem::GetTeamLink(TScriptInterface<ICppEntity> InFirstEntity, TScriptInterface<ICppEntity> InSecondEntity)
 {
-	UCppTeamLink** Found = Links.FindByPredicate([InFirstEntity, InSecondEntity](UCppTeamLink* InTeamLink)
+	ICppEntity* FirstEntity = InFirstEntity.GetInterface();
+	ICppEntity* SecondEntity = InSecondEntity.GetInterface();
+	if (!FirstEntity || !SecondEntity)
 	{
-		return (InTeamLink->FirstTeam == InFirstEntity->GetTeam()
-			&& InTeamLink->SecondTeam == InSecondEntity->GetTeam())
-			|| (InTeamLink->FirstTeam == InSecondEntity->GetTeam()
-				&& InTeamLink->SecondTeam == InFirstEntity->GetTeam());
+		return nullptr;
+	}
+	UCppTeam* FirstTeam = FirstEntity->GetTeam();
+	UCppTeam* SecondTeam = SecondEntity->GetTeam();
+	if (!FirstTeam || !SecondTeam)
+	{
+		return nullptr;
+	}
+	if (FirstTeam == SecondTeam || FirstTeam->Name == SecondTeam->Name)
+	{
+		return nullptr;
+	}
+	UCppTeamLink** Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
+	{
+		return (InTeamLink->FirstTeam == FirstTeam && InTeamLink->SecondTeam == SecondTeam)
+			|| (InTeamLink->FirstTeam == SecondTeam && InTeamLink->SecondTeam == FirstTeam);
+	});
+	return Found ? *Found : nullptr;
+}
+
+bool UCppTeamSubsystem::ResolveRelationship(TScriptInterface<ICppEntity> InFirstEntity,
+	TScriptInterface<ICppEntity> InSecondEntity,
+	ECppTeamRelationship& OutRelationship) const
+{
+	ICppEntity* FirstEntity = InFirstEntity.GetInterface();
+	ICppEntity* SecondEntity = InSecondEntity.GetInterface();
+	if (!FirstEntity || !SecondEntity)
+	{
+		OutRelationship = ECppTeamRelationship::Neutral;
+		return false;
+	}
+	UCppTeam* FirstTeam = FirstEntity->GetTeam();
+	UCppTeam* SecondTeam = SecondEntity->GetTeam();
+	if (!FirstTeam || !SecondTeam)
+	{
+		OutRelationship = ECppTeamRelationship::Neutral;
+		return false;
+	}
+	if (FirstTeam == SecondTeam || FirstTeam->Name == SecondTeam->Name)
+	{
+		OutRelationship = ECppTeamRelationship::Friendly;
+		return true;
+	}
+	const UCppTeamLink* const* Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
+	{
+		return (InTeamLink->FirstTeam == FirstTeam && InTeamLink->SecondTeam == SecondTeam)
+			|| (InTeamLink->FirstTeam == SecondTeam && InTeamLink->SecondTeam == FirstTeam);
 	});
 	if (!Found)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::GetTeamLink: Team link between '%s' (Team '%s') and '%s' (Team '%s') not found"),
-			InFirstEntity.GetObject()->GetName().GetCharArray().GetData(),
-			InFirstEntity->GetTeam()->Name.ToString().GetCharArray().GetData(),
-			InSecondEntity.GetObject()->GetName().GetCharArray().GetData(),
-			InSecondEntity->GetTeam()->Name.ToString().GetCharArray().GetData());
-		return nullptr;
+		UE_LOG(LogTemp,
+			Error,
+			TEXT("UCppTeamSubsystem::ResolveRelationship: no team link between '%s' and '%s', treating as neutral"),
+			*FirstTeam->Name.ToString(), *SecondTeam->Name.ToString());
+		OutRelationship = ECppTeamRelationship::Neutral;
+		return false;
 	}
-	else
-	{
-		return *Found;
-	}
+	OutRelationship = (*Found)->Relationship;
+	return true;
 }
 
 bool UCppTeamSubsystem::IsFriendly(TScriptInterface<ICppEntity> InFirstEntity, TScriptInterface<ICppEntity> InSecondEntity) const
 {
-	UCppTeamLink* TeamLink = ((UCppTeamSubsystem*)this)->GetTeamLink(InFirstEntity, InSecondEntity);
-	if (!TeamLink)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::IsFriendly: Team link not found"));
-		return false;
-	}
-	return TeamLink->Relationship == ECppTeamRelationship::Friendly;
+	ECppTeamRelationship Relationship;
+	const bool bResolved = ResolveRelationship(InFirstEntity, InSecondEntity, Relationship);
+	return bResolved && Relationship == ECppTeamRelationship::Friendly;
 }
 
 bool UCppTeamSubsystem::IsNeutral(TScriptInterface<ICppEntity> InFirstEntity, TScriptInterface<ICppEntity> InSecondEntity) const
 {
-	UCppTeamLink* TeamLink = ((UCppTeamSubsystem*)this)->GetTeamLink(InFirstEntity, InSecondEntity);
-	if (!TeamLink)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::IsNeutral: Team link not found"));
-		return false;
-	}
-	return TeamLink->Relationship == ECppTeamRelationship::Neutral;
+	ECppTeamRelationship Relationship;
+	ResolveRelationship(InFirstEntity, InSecondEntity, Relationship);
+	return Relationship == ECppTeamRelationship::Neutral;
 }
 
 bool UCppTeamSubsystem::IsFriendlyOrNeutral(TScriptInterface<ICppEntity> InFirstEntity, TScriptInterface<ICppEntity> InSecondEntity) const
 {
-	UCppTeamLink* TeamLink = ((UCppTeamSubsystem*)this)->GetTeamLink(InFirstEntity, InSecondEntity);
-	if (!TeamLink)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::IsFriendlyOrNeutral: Team link not found"));
-		return false;
-	}
-	return TeamLink->Relationship == ECppTeamRelationship::Friendly || TeamLink->Relationship == ECppTeamRelationship::Neutral;
+	ECppTeamRelationship Relationship;
+	ResolveRelationship(InFirstEntity, InSecondEntity, Relationship);
+	return Relationship == ECppTeamRelationship::Friendly || Relationship == ECppTeamRelationship::Neutral;
 }
 
-bool UCppTeamSubsystem::IsHostile(const TScriptInterface<ICppEntity> InFirstEntity, const TScriptInterface<ICppEntity> InSecondEntity) const
+bool UCppTeamSubsystem::IsHostile(TScriptInterface<ICppEntity> InFirstEntity, TScriptInterface<ICppEntity> InSecondEntity) const
 {
-	UCppTeamLink* TeamLink = ((UCppTeamSubsystem*)this)->GetTeamLink(InFirstEntity, InSecondEntity);
-	if (!TeamLink)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::IsHostile: Team link not found"));
-		return false;
-	}
-	return TeamLink->Relationship == ECppTeamRelationship::Hostile;
+	ECppTeamRelationship Relationship;
+	const bool bResolved = ResolveRelationship(InFirstEntity, InSecondEntity, Relationship);
+	return bResolved && Relationship == ECppTeamRelationship::Hostile;
 }
 
 UCppTeam* UCppTeamSubsystem::CreateTeam(const FName& InName)
 {
 	if (UCppTeam** Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; }))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeam: Team '%s' already exists, returned this team"), InName.ToString().GetCharArray().GetData());
+		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeam: Team '%s' already exists, returned this team"), *InName.ToString());
 		return *Found;
 	}
-
 	UCppTeam* NewTeam = NewObject<UCppTeam>();
 	NewTeam->Name = InName;
 	Teams.Add(NewTeam);
@@ -98,25 +121,28 @@ UCppTeam* UCppTeamSubsystem::CreateTeam(const FName& InName)
 
 UCppTeamLink* UCppTeamSubsystem::CreateTeamLink(UCppTeam* InFirstTeam, UCppTeam* InSecondTeam, ECppTeamRelationship InTeamRelationship)
 {
-	if (InFirstTeam->Name == InSecondTeam->Name)
+	if (!InFirstTeam || !InSecondTeam)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeamLink: Attempting to create team link between the same teams '%s'"), 
-			InFirstTeam->Name.ToString().GetCharArray().GetData());
+		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::CreateTeamLink: invalid team"));
 		return nullptr;
 	}
-
+	if (InFirstTeam->Name == InSecondTeam->Name)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeamLink: Attempting to create team link between the same teams '%s'"),
+			*InFirstTeam->Name.ToString());
+		return nullptr;
+	}
 	if (UCppTeamLink** Found = Links.FindByPredicate([InFirstTeam, InSecondTeam](UCppTeamLink* InTeamLink)
 	{
 		return (InTeamLink->FirstTeam == InFirstTeam || InTeamLink->FirstTeam == InSecondTeam)
 			&& (InTeamLink->SecondTeam == InFirstTeam || InTeamLink->SecondTeam == InSecondTeam);
 	}))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeamLink: Team link between teams '%s' and '%s' already exists, returned this team link"), 
-			InFirstTeam->Name.ToString().GetCharArray().GetData(),
-			InSecondTeam->Name.ToString().GetCharArray().GetData());
+		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeamLink: Team link between teams '%s' and '%s' already exists, returned this team link"),
+			*InFirstTeam->Name.ToString(),
+			*InSecondTeam->Name.ToString());
 		return *Found;
 	}
-
 	UCppTeamLink* NewLink = NewObject<UCppTeamLink>();
 	NewLink->FirstTeam = InFirstTeam;
 	NewLink->SecondTeam = InSecondTeam;

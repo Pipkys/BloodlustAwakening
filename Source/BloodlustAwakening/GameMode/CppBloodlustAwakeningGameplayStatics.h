@@ -1,17 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 
-#include "BloodlustAwakening/Actors/Buildings/Towers/CppTower.h"
-#include "BloodlustAwakening/Actors/Buildings/Towers/CppTowerSpawnParameters.h"
-#include "BloodlustAwakening/Actors/Decorations/CppDecoration.h"
-#include "BloodlustAwakening/Actors/Interface/CppDamageable.h"
-#include "BloodlustAwakening/Actors/Interface/CppEntity.h"
-#include "BloodlustAwakening/Actors/Projectiles/CppProjectile.h"
-#include "BloodlustAwakening/Actors/Projectiles/CppProjectileSpawnParameters.h"
-#include "BloodlustAwakening/Actors/Spawners/CppSpawner.h"
-#include "BloodlustAwakening/Actors/Units/CppUnit.h"
-#include "BloodlustAwakening/Actors/Units/CppUnitSpawnParameters.h"
+#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
+#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerSpawnParameters.h"
+#include "BloodlustAwakening/Buildings/Decorations/Implementation/CppDecoration.h"
+#include "BloodlustAwakening/Interface/CppDamageable.h"
+#include "BloodlustAwakening/Interface/CppEntity.h"
+#include "BloodlustAwakening/Projectiles/CppProjectile.h"
+#include "BloodlustAwakening/Projectiles/CppProjectileSpawnParameters.h"
+#include "BloodlustAwakening/Buildings/Spawners/Implementation/CppSpawner.h"
+#include "BloodlustAwakening/Units/Implementation/CppUnit.h"
+#include "BloodlustAwakening/Units/Implementation/CppUnitSpawnParameters.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 
 #include "Kismet/BlueprintFunctionLibrary.h"

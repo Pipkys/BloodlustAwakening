@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Components/ActorComponent.h"
+#include "GameFramework/DamageType.h"
 #include "NiagaraSystem.h"
 
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackType.h"
@@ -10,39 +11,92 @@
 
 #include "CppAttackComponent.generated.h"
 
-UCLASS(BlueprintType, ClassGroup = "BloodlustAwakening")
+class ACppProjectile;
+
+UCLASS(BlueprintType, Blueprintable, ClassGroup = "BloodlustAwakening")
 class BLOODLUSTAWAKENING_API UCppAttackComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-	ECppAttackType AttackType;
+	ECppAttackType AttackType = ECppAttackType::Melee;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TSubclassOf<UDamageType> DamageType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Effects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TObjectPtr<UNiagaraSystem> AttackEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-	float Damage;
+	TObjectPtr<UNiagaraSystem> ImpactEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-	float Speed;
+	float Damage = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-	float Range;
+	float Speed = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float Range = 0.f;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Melee")
+	bool bSingleTarget = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Melee")
+	float CleaveRadius = 0.f;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	TSubclassOf<ACppProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	TObjectPtr<UNiagaraSystem> ShotEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	bool bProjectileRotationFollowsVelocity = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	float ProjectileGravityScale = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	bool bIsHomingProjectile = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	float ProjectileHomingAccelerationMagnitude = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	float ProjectileInitialSpeed = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	float ProjectileMaxSpeed = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
+	float ProjectileOverlapRadius = 4.f;
 
 private:
-	mutable FTimerHandle AttackTimer;
+	FTimerHandle AttackTimer;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackTimerCallback);
 	UPROPERTY()
 	FAttackTimerCallback AttackTimerCallback = {};
 
+protected:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	virtual void SetupComponent(AActor* InOwner, const FCppActorSpawnParameters& InSpawnParameters);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	float GetDamage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	float GetSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	float GetRange() const;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Attack")
@@ -56,14 +110,19 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-	virtual void PerformAttack(AActor* InTarget, const FTransform& InAttackPointTransform) PURE_VIRTUAL(UCppAttackComponent::PerformAttack);
+	void PerformAttack(AActor* InTarget, const FTransform& InAttackPointTransform);
 
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-	void SetAttackTimerCallaback(UObject* InObject, const FName& InFunctionName);
+	void SetAttackTimerCallback(UObject* InObject, const FName& InFunctionName);
 
 protected:
-	void OnPerformAttack() const;
-};
+	void PerformMeleeAttack(AActor* InTarget, const FTransform& InAttackPointTransform);
+	void PerformRangedAttack(AActor* InTarget, const FTransform& InAttackPointTransform);
 
-template<typename T>
-concept IsAttackComponent = std::is_base_of_v<UCppAttackComponent, T>;
+	void AppendCleaveTargets(AActor* InPrimaryTarget, TArray<AActor*>& InOutTargets) const;
+
+	void StartAttackCooldown();
+	void OnAttackCooldownFinished();
+
+	void SpawnNiagaraEffect(UNiagaraSystem* InEffect, const FTransform& InTransform) const;
+};

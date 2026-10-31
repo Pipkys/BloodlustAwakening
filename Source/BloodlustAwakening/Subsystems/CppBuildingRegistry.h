@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 
-#include "BloodlustAwakening/Actors/Interface/CppGridPlaceable.h"
+#include "BloodlustAwakening/Interface/CppGridPlaceable.h"
 
 #include "CppBuildingRegistry.generated.h"
 

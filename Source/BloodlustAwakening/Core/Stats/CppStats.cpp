@@ -1,50 +1,19 @@
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 
-#include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
-
-namespace BloodlustAwakening::Private
+FName FCppStatsDatabaseRow::GetArchetypeRowName(const UClass* InClass)
 {
-	static FName ExtractNameFromBlueprintName(const FString& FullString)
+	if (!InClass)
 	{
-		int32 FirstUnderscore = FullString.Find(TEXT("_"));
-		UE_LOG(LogTemp, Warning, TEXT("ExtractNameFromBlueprintName: FullString: %s"), *FullString);
-		UE_LOG(LogTemp, Warning, TEXT("ExtractNameFromBlueprintName: First Underscore: %i"), FirstUnderscore);
-		if (FirstUnderscore == INDEX_NONE)
-		{
-			return *FullString;
-		}
-		FString temp = FullString.Mid(FirstUnderscore + 1);
-		UE_LOG(LogTemp, Warning, TEXT("ExtractNameFromBlueprintName: Mid of it: %s"), *temp);
-		int32 SecondUnderscore = temp.Find(TEXT("_"));
-		UE_LOG(LogTemp, Warning, TEXT("ExtractNameFromBlueprintName: Second Underscore: %i"), SecondUnderscore);
-		if (SecondUnderscore == INDEX_NONE)
-		{
-			return *temp;
-		}
-		UE_LOG(LogTemp, Warning, TEXT("ExtractNameFromBlueprintName: Mid of second: %s"), *temp.Mid(0, SecondUnderscore));
-		return *temp.Mid(0, SecondUnderscore);
+		return NAME_None;
 	}
-
-	static FName ExtractNameFromBlueprintName(const FName& FullString)
+	FString NameString = InClass->GetFName().ToString();
+	if (NameString.StartsWith(TEXT("BP_")))
 	{
-		return ExtractNameFromBlueprintName(FullString.ToString());
+		NameString.RightChopInline(3);
 	}
-}
-
-FCppStats* FCppStatsDatabaseRowView::Load(UClass* InClass, const UDataTable* InDatabase)
-{
-	return InDatabase->FindRow<FCppStats>(BloodlustAwakening::Private::ExtractNameFromBlueprintName(InClass->GetFName().ToString()),
-		"FCppStatsDatabaseRowView::Load");
-}
-
-FCppStats* FCppStatsDatabaseRowView::Load(UObject* InObject, const UDataTable* InDatabase)
-{
-	return InDatabase->FindRow<FCppStats>(BloodlustAwakening::Private::ExtractNameFromBlueprintName(InObject->GetClass()->GetFName()),
-		"FCppStatsDatabaseRowView::Load");
-}
-
-FCppStats* FCppStatsDatabaseRowView::Load() const
-{
-	return Database->FindRow<FCppStats>(BloodlustAwakening::Private::ExtractNameFromBlueprintName(ClassBoundedTo->GetFName()),
-		"FCppStatsDatabaseRowView::Load");
+	if (NameString.EndsWith(TEXT("_C")))
+	{
+		NameString.LeftChopInline(2);
+	}
+	return FName(*NameString);
 }

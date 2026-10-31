@@ -4,5 +4,5 @@
 
 ACppCellGrid* ACppCell::GetGrid()
 {
-	return (ACppCellGrid*)Owner;
+	return Cast<ACppCellGrid>(GetOwner());
 }

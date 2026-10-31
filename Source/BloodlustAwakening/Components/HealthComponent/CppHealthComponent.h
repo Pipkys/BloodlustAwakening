@@ -16,15 +16,13 @@ class BLOODLUSTAWAKENING_API UCppHealthComponent : public UActorComponent
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxHealth;
+	float MaxHealth = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentHealth;
+	float CurrentHealth = 0.f;
 
-private:
 	bool bDead = false;
 
-public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTakeDamage, FCppDamageEvent, InDamageEvent);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	FOnTakeDamage OnTakeDamageEvent;
@@ -57,13 +55,10 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
-	void OnTakeDamage(float InBaseDamage,
+	float OnTakeDamage(float InBaseDamage,
 		const FDamageEvent& InDamageEvent,
 		AController* InInstigatorController,
 		AActor* InDamageCauser);
-
-	UFUNCTION(BlueprintCallable, Category = "Health")
-	void OnDie();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Health")

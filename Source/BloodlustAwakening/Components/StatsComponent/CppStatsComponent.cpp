@@ -1,11 +1,33 @@
 #include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 
-FCppStats* UCppStatsComponent::GetStats(UClass* InClass, ECppStatsType InType)
+void UCppStatsComponent::CacheStats(ECppStatsType InType, UDataTable* InDatabase, FCppStats* InStats)
 {
-	FCppStatsDatabaseRowView* Loaded = LoadedStats.FindByPredicate([InClass, InType](const FCppStatsDatabaseRowView& InStatsView)
+	if (FCppStatsCache* StatsCache = CachedStats.Find(InType))
 	{
-		return InStatsView.ClassBoundedTo == InClass && InStatsView.Type == InType;
-	});
+		UE_LOG(LogTemp,
+			Error,
+			TEXT("UCppStatsComponent::CacheStats: stats of type '%s' already cached, owner is '%s'"),
+			*StaticEnum<ECppStatsType>()->GetDisplayNameTextByValue((int64)InType).ToString(),
+			*GetOwner()->GetName());
+		return;
+	}
+	FCppStatsCache Cache;
+	Cache.Database = InDatabase;
+	Cache.Stats = InStats;
+	CachedStats.Emplace(InType, Cache);
+}
 
-	return Loaded ? Loaded->Load() : nullptr;
+FCppStats* UCppStatsComponent::GetCachedStats(ECppStatsType InType) const
+{
+	const FCppStatsCache* StatsCache = CachedStats.Find(InType);
+	if (!StatsCache)
+	{
+		UE_LOG(LogTemp,
+			Error,
+			TEXT("UCppStatsComponent::CacheStats: stats of type '%s' is not cached, owner is '%s'"),
+			*StaticEnum<ECppStatsType>()->GetDisplayNameTextByValue((int64)InType).ToString(),
+			*GetOwner()->GetName());
+		return nullptr;
+	}
+	return StatsCache->Stats;
 }

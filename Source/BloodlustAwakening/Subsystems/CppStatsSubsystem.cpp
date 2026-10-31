@@ -1,30 +1,47 @@
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
-namespace BloodlustAwakening::Private
-{
-	static FCppStats* Internal_LoadStats(TScriptInterface<ICppEntity> InUnit, ECppStatsType InType)
-	{
-		FCppStats* Stats = InUnit->GetStats(InType);
-		if (!Stats)
-		{
-			return nullptr;
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Internal_LoadStats: Attempting to load already loaded stats"));
-		return Stats;
-	}
-}
+#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 
-FCppStats* UCppStatsSubsystem::LoadStats(TScriptInterface<ICppEntity> InUnit, ECppStatsType InType)
+FCppStats* UCppStatsSubsystem::LoadStats(TScriptInterface<ICppEntity> InEntity, ECppStatsType InType)
 {
-	FCppStats* Stats = BloodlustAwakening::Private::Internal_LoadStats(InUnit, InType);
-	if (!Stats)
+	UObject* EntityObject = InEntity.GetObject();
+	ICppEntity* EntityInterface = InEntity.GetInterface();
+	if (!EntityObject || !EntityInterface)
 	{
-		FCppStatsView StatsView;
-		StatsView.Type = InType;
-		StatsView.ClassBoundedTo = InUnit.GetObject()->GetClass();
-		StatsView.Database = *StatsDatabase.Find(InType);
-		InUnit->CacheStats(StatsView);
-		return StatsView.Load();
+		UE_LOG(LogTemp, Error, TEXT("UCppStatsSubsystem::LoadStats: entity is invalid or does not implement 'ICppEntity'"));
+		return nullptr;
 	}
-	return Stats;
+	UCppStatsComponent* StatsComponent = EntityInterface->GetStatsComponent();
+	if (!StatsComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCppStatsSubsystem::LoadStats: '%s' has no stats component"), *EntityObject->GetName());
+		return nullptr;
+	}
+	if (FCppStats* Loaded = StatsComponent->GetCachedStats(InType))
+	{
+		return Loaded;
+	}
+	TObjectPtr<UDataTable>* FoundStatsDatabase = StatsDatabases.Find(InType);
+	if (!FoundStatsDatabase)
+	{
+		UE_LOG(LogTemp,
+			Error,
+			TEXT("UCppStatsSubsystem::LoadStats: stats database is not set for '%s'"),
+			*StaticEnum<ECppStatsType>()->GetDisplayNameTextByValue((int64)InType).ToString());
+		return nullptr;
+	}
+	FName RowName = FCppStats::GetArchetypeRowName(EntityObject->GetClass());
+	FCppStats* EntityStats = (*FoundStatsDatabase)->FindRow<FCppStats>(RowName, TEXT("UCppStatsSubsystem::LoadStats"), true);
+	if (!EntityStats)
+	{
+		UE_LOG(LogTemp,
+			Error,
+			TEXT("UCppStatsSubsystem::LoadStats: no row '%s' for '%s', database: '%s'"),
+			*RowName.ToString(),
+			*EntityObject->GetName(),
+			*FoundStatsDatabase->GetName());
+		return nullptr;
+	}
+	StatsComponent->CacheStats(InType, *FoundStatsDatabase, EntityStats);
+	return EntityStats;
 }

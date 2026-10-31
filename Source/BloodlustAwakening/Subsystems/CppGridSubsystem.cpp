@@ -33,7 +33,7 @@ FCppCircleGridData UCppGridSubsystem::GenerateCircleGrid(ECppGridType InGridType
 			InRadius,
 			InOnCellSpawnEvent);
 	}
-	UE_LOG(LogTemp, Fatal, TEXT("UCppGridSubsystem::GenerateCircleGrid: Attempting to generate circle grid, without generator setup"));
+	UE_LOG(LogTemp, Error, TEXT("UCppGridSubsystem::GenerateCircleGrid: Attempting to generate circle grid, without generator setup"));
 	return FCppCircleGridData();
 }
 
@@ -51,6 +51,6 @@ FCppRectangleGridData UCppGridSubsystem::GenerateRectangleGrid(ECppGridType InGr
 			InColumnCount,
 			InOnCellSpawnEvent);
 	}
-	UE_LOG(LogTemp, Fatal, TEXT("UCppGridSubsystem::GenerateRectangleGrid: Attempting to generate rectangle grid, without generator setup"));
+	UE_LOG(LogTemp, Error, TEXT("UCppGridSubsystem::GenerateRectangleGrid: Attempting to generate rectangle grid, without generator setup"));
 	return FCppRectangleGridData();
 }

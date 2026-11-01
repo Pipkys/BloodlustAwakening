@@ -28,10 +28,23 @@ public:
 	TObjectPtr<UBlackboardData> BlackboardData;
 
 protected:
+	AActor* CurrentTarget = nullptr;
+	float AcceptableRadius = 0.f;
+
+protected:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Controller|AI")
+	AActor* GetCurrentTarget() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Controller|AI")
+	float GetAcceptableRadius() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Controller|AI")
 	void SetCurrentTarget(AActor* InActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Controller|AI")
+	void SetAcceptableRadius(float InAcceptableRadius);
 };

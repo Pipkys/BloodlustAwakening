@@ -2,8 +2,7 @@
 
 ACppAIController::ACppAIController()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
 	BrainComponent = BehaviorTreeComponent;
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>("BlackboardComponent");
@@ -12,12 +11,10 @@ ACppAIController::ACppAIController()
 void ACppAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (BlackboardData)
 	{
 		Blackboard->InitializeBlackboard(*BlackboardData);
 	}
-
 	if (BehaviorTreeAsset)
 	{
 		RunBehaviorTree(BehaviorTreeAsset);
@@ -29,7 +26,22 @@ void ACppAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+AActor* ACppAIController::GetCurrentTarget() const
+{
+	return CurrentTarget;
+}
+
+float ACppAIController::GetAcceptableRadius() const
+{
+	return AcceptableRadius;
+}
+
 void ACppAIController::SetCurrentTarget(AActor* InActor)
 {
-	GetBlackboardComponent()->SetValueAsObject("CurrentTarget", InActor);
+	Blackboard->SetValueAsObject("CurrentTarget", InActor);
+}
+
+void ACppAIController::SetAcceptableRadius(float InAcceptableRadius)
+{
+	Blackboard->SetValueAsFloat("AcceptableRadius", InAcceptableRadius);
 }

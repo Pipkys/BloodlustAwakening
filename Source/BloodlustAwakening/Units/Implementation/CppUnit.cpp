@@ -78,12 +78,14 @@ void ACppUnit::Tick(float DeltaTime)
 	{
 		if (IsCanAttackTarget(CurrentTarget, AttackPointTransform))
 		{
-			AIController->StopMovement();
 			AttackComponent->PerformAttack(CurrentTarget, AttackPointTransform);
 		}
 		else
 		{
-			AIController->SetCurrentTarget(CurrentTarget);
+			if (AIController->GetCurrentTarget() != CurrentTarget)
+			{
+				AIController->SetCurrentTarget(CurrentTarget);
+			}
 		}
 	}
 	else
@@ -117,6 +119,7 @@ void ACppUnit::Setup(const FCppUnitSpawnParameters& InSpawnParameters)
 	LoadStats();
 	HealthComponent->SetupComponent(this, InSpawnParameters);
 	AttackComponent->SetupComponent(this, InSpawnParameters);
+	AIController->SetAcceptableRadius(AttackComponent->GetRange());
 }
 
 UStaticMeshComponent* ACppUnit::GetStaticMeshComponent()

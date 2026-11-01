@@ -1,4 +1,4 @@
-﻿#include "BloodlustAwakening/Projectiles/CppProjectile.h"
+#include "BloodlustAwakening/Projectiles/CppProjectile.h"
 
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 
@@ -8,6 +8,8 @@
 ACppProjectile::ACppProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
+	RootComponent = Root;
 	OverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
 	OverlapComponent->SetupAttachment(RootComponent);
 	OverlapComponent->SetCollisionObjectType(ECC_Projectile);
@@ -63,14 +65,17 @@ void ACppProjectile::LockOnTarget(AActor* InTarget)
 	{
 		SetActorTickEnabled(true);
 	}
-	UNiagaraFunctionLibrary::SpawnSystemAttached(
-		ShotEffect,
-		OverlapComponent,
-		"ShotEffect",
-		FVector::Zero(),
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
-		true);
+	if (IsValid(ShotEffect))
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+			ShotEffect,
+			OverlapComponent,
+			"ShotEffect",
+			FVector::Zero(),
+			FRotator::ZeroRotator,
+			EAttachLocation::KeepRelativeOffset,
+			true);
+	}
 }
 
 void ACppProjectile::OnBeginOverlap(UPrimitiveComponent* InOverlappedComponent,
@@ -94,6 +99,10 @@ void ACppProjectile::OnBeginOverlap(UPrimitiveComponent* InOverlappedComponent,
 
 void ACppProjectile::Explode()
 {
+	if (IsActorBeingDestroyed())
+	{
+		return;
+	}
 	if (IsValid(ImpactEffect))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, GetActorLocation());

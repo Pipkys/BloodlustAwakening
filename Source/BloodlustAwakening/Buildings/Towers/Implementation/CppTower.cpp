@@ -1,4 +1,4 @@
-﻿#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
+#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
 
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerSpawnParameters.h"
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerStats.h"
@@ -11,6 +11,7 @@
 ACppTower::ACppTower()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.05f;
 	HealthComponent = CreateDefaultSubobject<UCppHealthComponent>("HealthComponent");
 	AttackComponent = CreateDefaultSubobject<UCppAttackComponent>("AttackComponent");
 	AttackPointComponent = CreateDefaultSubobject<USphereComponent>("AttackPointComponent");
@@ -53,17 +54,12 @@ void ACppTower::Tick(float DeltaTime)
 			ReleaseTarget();
 		}
 		const float AttackRange = AttackComponent->GetRange();
-		const TArray<AActor*>& DamageableActorsAround = UCppBloodlustAwakeningGameplayStatics::FindActors(this,
+		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(UCppBloodlustAwakeningGameplayStatics::FindActors(this,
 			AttackRange,
 			{ ECC_Unit },
 			AActor::StaticClass(),
 			{ this },
-			AttackPointTransform.GetLocation());
-		if (DamageableActorsAround.IsEmpty())
-		{
-			return;
-		}
-		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(DamageableActorsAround,
+			AttackPointTransform.GetLocation()),
 			AttackRange,
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)

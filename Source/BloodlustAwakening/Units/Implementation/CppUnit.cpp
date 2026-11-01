@@ -1,4 +1,4 @@
-﻿#include "BloodlustAwakening/Units/Implementation/CppUnit.h"
+#include "BloodlustAwakening/Units/Implementation/CppUnit.h"
 
 #include "BloodlustAwakening/AI/CppAIController.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
@@ -9,6 +9,7 @@
 ACppUnit::ACppUnit()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.05f;
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = ACppAIController::StaticClass();
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
@@ -91,17 +92,12 @@ void ACppUnit::Tick(float DeltaTime)
 		{
 			ReleaseTarget();
 		}
-		const TArray<AActor*>& DamageableActorsAround = UCppBloodlustAwakeningGameplayStatics::FindActors(this,
+		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(UCppBloodlustAwakeningGameplayStatics::FindActors(this,
 			DetectionRange,
 			{ ECC_Building },
 			AActor::StaticClass(),
 			{ this },
-			AttackPointTransform.GetLocation());
-		if (DamageableActorsAround.IsEmpty())
-		{
-			return;
-		}
-		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(DamageableActorsAround,
+			AttackPointTransform.GetLocation()),
 			DetectionRange,
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)

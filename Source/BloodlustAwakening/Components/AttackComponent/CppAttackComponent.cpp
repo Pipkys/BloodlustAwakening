@@ -1,4 +1,4 @@
-﻿#include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
+#include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
 
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackStats.h"
 #include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
@@ -68,7 +68,8 @@ float UCppAttackComponent::GetRange() const
 
 bool UCppAttackComponent::IsTargetInAttackRange(AActor* InTarget, const FTransform& InPointTransform) const
 {
-	return FVector::Distance(InPointTransform.GetLocation(), InTarget->GetActorLocation()) <= GetRange();
+	const float AttackRange = GetRange();
+	return FVector::DistSquared(InPointTransform.GetLocation(), InTarget->GetActorLocation()) <= AttackRange * AttackRange;
 }
 
 bool UCppAttackComponent::IsCanAttack() const
@@ -110,13 +111,24 @@ void UCppAttackComponent::PerformMeleeAttack(AActor* InTarget, const FTransform&
 {
 	AActor* Owner = GetOwner();
 	const float EffectiveDamage = GetDamage();
-	TArray<AActor*> Targets;
-	Targets.Add(InTarget);
-	if (!bSingleTarget)
-	{
-		AppendCleaveTargets(InTarget, Targets);
-	}
 	SpawnNiagaraEffect(AttackEffect, InAttackPointTransform);
+	if (bSingleTarget)
+	{
+		if (IsValid(InTarget))
+		{
+			UGameplayStatics::ApplyDamage(InTarget,
+				EffectiveDamage,
+				Owner ? Owner->GetInstigatorController() : nullptr,
+				Owner,
+				DamageType);
+			SpawnNiagaraEffect(ImpactEffect, InTarget->GetActorTransform());
+		}
+		return;
+	}
+	TArray<AActor*> Targets;
+	Targets.Reserve(8);
+	Targets.Add(InTarget);
+	AppendCleaveTargets(InTarget, Targets);
 	for (AActor* Target : Targets)
 	{
 		if (!IsValid(Target))

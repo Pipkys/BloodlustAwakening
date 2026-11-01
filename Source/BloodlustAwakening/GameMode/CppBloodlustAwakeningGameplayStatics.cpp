@@ -6,7 +6,7 @@ bool UCppBloodlustAwakeningGameplayStatics::IsActorInRange(AActor* InActor,
 	float InRange,
 	const FVector& InLocation)
 {
-	return FVector::Distance(InLocation, InActor->GetActorLocation()) <= InRange;
+	return FVector::DistSquared(InLocation, InActor->GetActorLocation()) <= InRange * InRange;
 }
 
 AActor* UCppBloodlustAwakeningGameplayStatics::FindActorByPredicate(UObject* InWorldContextObject,
@@ -18,7 +18,6 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindActorByPredicate(UObject* InW
 	const FCppActorPredicate& InPredicate)
 {
 	TArray<AActor*> Actors = FindActors(InWorldContextObject, InRange, InActorTypes, InActorClassFilter, InActorsToIgnore, InOverlapLocation);
-
 	for (AActor* Actor : Actors)
 	{
 		if (InPredicate.Execute(Actor))
@@ -38,11 +37,11 @@ TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActors(UObject* InWor
 	const FVector& InOverlapLocation)
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Reserve(InActorTypes.Num());
 	for (TEnumAsByte<ECollisionChannel> ActorType : InActorTypes)
 	{
 		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ActorType.GetValue()));
 	}
-
 	TArray<AActor*> Result;
 	UKismetSystemLibrary::SphereOverlapActors(InWorldContextObject,
 		InOverlapLocation,
@@ -51,7 +50,6 @@ TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActors(UObject* InWor
 		InActorClassFilter,
 		InActorsToIgnore,
 		Result);
-
 	return Result;
 }
 
@@ -80,31 +78,21 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActor(const TArray<AAc
 	float InRange,
 	const FVector& InLocation)
 {
-	if (!InActors.Num())
-	{
-		return nullptr;
-	}
-
 	AActor* NearestActor = nullptr;
-	float MinDistanceSquared = FLT_MAX;
-
+	float MinDistanceSquared = TNumericLimits<float>::Max();
 	for (AActor* Actor : InActors)
 	{
 		if (!IsValid(Actor))
 		{
 			continue;
 		}
-
-		const FVector HostileLocation = Actor->GetActorLocation();
-		const float DistanceSquared = (HostileLocation - InLocation).SizeSquared();
-
+		const float DistanceSquared = FVector::DistSquared(Actor->GetActorLocation(), InLocation);
 		if (DistanceSquared < MinDistanceSquared)
 		{
 			MinDistanceSquared = DistanceSquared;
 			NearestActor = Actor;
 		}
 	}
-
 	return NearestActor;
 }
 
@@ -113,16 +101,26 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const
 	const FVector& InLocation,
 	const FCppActorPredicate& InPredicate)
 {
-	TArray<AActor*> Filtered;
+	AActor* NearestActor = nullptr;
+	float MinDistanceSquared = TNumericLimits<float>::Max();
 	for (AActor* Actor : InActors)
 	{
-		if (InPredicate.Execute(Actor))
+		if (!IsValid(Actor))
 		{
-			Filtered.Add(Actor);
+			continue;
+		}
+		if (!InPredicate.Execute(Actor))
+		{
+			continue;
+		}
+		const float DistanceSquared = FVector::DistSquared(Actor->GetActorLocation(), InLocation);
+		if (DistanceSquared < MinDistanceSquared)
+		{
+			MinDistanceSquared = DistanceSquared;
+			NearestActor = Actor;
 		}
 	}
-
-	return FindNearestActor(Filtered, InRange, InLocation);
+	return NearestActor;
 }
 
 AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
@@ -130,16 +128,26 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const
 	const FVector& InLocation,
 	const TFunctionRef<bool(AActor*)>& InPredicate)
 {
-	TArray<AActor*> Filtered;
+	AActor* NearestActor = nullptr;
+	float MinDistanceSquared = TNumericLimits<float>::Max();
 	for (AActor* Actor : InActors)
 	{
-		if (InPredicate(Actor))
+		if (!IsValid(Actor))
 		{
-			Filtered.Add(Actor);
+			continue;
+		}
+		if (!InPredicate(Actor))
+		{
+			continue;
+		}
+		const float DistanceSquared = FVector::DistSquared(Actor->GetActorLocation(), InLocation);
+		if (DistanceSquared < MinDistanceSquared)
+		{
+			MinDistanceSquared = DistanceSquared;
+			NearestActor = Actor;
 		}
 	}
-
-	return FindNearestActor(Filtered, InRange, InLocation);
+	return NearestActor;
 }
 
 ACppUnit* UCppBloodlustAwakeningGameplayStatics::SpawnUnit(UObject* InWorldContextObject,

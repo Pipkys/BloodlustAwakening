@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 
@@ -16,12 +16,12 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-#include "CppBloodlustAwakeningGameplayStatics.generated.h"
+#include "CppGameplayStatics.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FCppActorPredicate, AActor*, InActor);
 
 UCLASS(Abstract, ClassGroup = "BloodlustAwakening")
-class BLOODLUSTAWAKENING_API UCppBloodlustAwakeningGameplayStatics : public UBlueprintFunctionLibrary
+class BLOODLUSTAWAKENING_API UCppGameplayStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

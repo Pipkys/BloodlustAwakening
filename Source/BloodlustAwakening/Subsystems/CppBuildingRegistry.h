@@ -23,26 +23,27 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void RegisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding, const TArray<ACppCell*>& InOccupiedCells);
+	static void RegisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding, const TArray<ACppCell*>& InOccupiedCells);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void UnregisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding);
+	static void UnregisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void RegisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration, const TArray<ACppCell*>& InOccupiedCells, bool bSmallEnough);
+	static void RegisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration, const TArray<ACppCell*>& InOccupiedCells);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void UnregisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration);
+	static void UnregisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void RegisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner, const TArray<ACppCell*>& InOccupiedCells);
+	static void RegisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner, const TArray<ACppCell*>& InOccupiedCells);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	void UnregisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner);
+	static void UnregisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner);
 
 	UFUNCTION(BlueprintCallable, Category = "Registry")
-	TScriptInterface<ICppGridPlaceable> GetBuildingByOccupiedCells(const TArray<ACppCell*>& InOccupiedCells);
+	static TScriptInterface<ICppGridPlaceable> GetBuildingByOccupiedCells(const TArray<ACppCell*>& InOccupiedCells);
 
-	UFUNCTION(BlueprintCallable, Category = "Registry")
-	TScriptInterface<ICppGridPlaceable> GetBuildingByOccupiedCellCoords(const TArray<FIntPoint>& InOccupiedCells);
+	UFUNCTION(BlueprintCallable, Category = "Registry", Meta = (WorldContext = "InWorldContextObject"))
+	static TScriptInterface<ICppGridPlaceable> GetBuildingByOccupiedCellCoords(UObject* InWorldContextObject, 
+		const TArray<FIntPoint>& InOccupiedCells);
 };

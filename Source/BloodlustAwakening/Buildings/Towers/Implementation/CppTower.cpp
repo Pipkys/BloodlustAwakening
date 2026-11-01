@@ -5,7 +5,7 @@
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/GameMode/CppBloodlustAwakeningGameplayStatics.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
 ACppTower::ACppTower()
@@ -54,7 +54,7 @@ void ACppTower::Tick(float DeltaTime)
 			ReleaseTarget();
 		}
 		const float AttackRange = AttackComponent->GetRange();
-		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(UCppBloodlustAwakeningGameplayStatics::FindActors(this,
+		AActor* NearestDamageableHostile = UCppGameplayStatics::FindNearestActorByPredicate(UCppGameplayStatics::FindActors(this,
 			AttackRange,
 			{ ECC_Unit },
 			AActor::StaticClass(),
@@ -64,7 +64,7 @@ void ACppTower::Tick(float DeltaTime)
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)
 		{
-			return IsHostileTo(InActor) && !UCppBloodlustAwakeningGameplayStatics::IsInvincible(InActor);
+			return IsHostileTo(InActor) && !UCppGameplayStatics::IsInvincible(InActor);
 		});
 		if (IsValid(NearestDamageableHostile))
 		{
@@ -94,7 +94,7 @@ float ACppTower::TakeDamage(float InBaseDamage,
 	class AController* InEventInstigator,
 	AActor* InDamageCauser)
 {
-	if (UCppBloodlustAwakeningGameplayStatics::IsInvincible(this))
+	if (UCppGameplayStatics::IsInvincible(this))
 	{
 		return 0.0f;
 	}

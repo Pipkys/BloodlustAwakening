@@ -3,7 +3,7 @@
 #include "BloodlustAwakening/AI/CppAIController.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/GameMode/CppBloodlustAwakeningGameplayStatics.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitStats.h"
 
 ACppUnit::ACppUnit()
@@ -94,7 +94,7 @@ void ACppUnit::Tick(float DeltaTime)
 		{
 			ReleaseTarget();
 		}
-		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(UCppBloodlustAwakeningGameplayStatics::FindActors(this,
+		AActor* NearestDamageableHostile = UCppGameplayStatics::FindNearestActorByPredicate(UCppGameplayStatics::FindActors(this,
 			DetectionRange,
 			{ ECC_Building },
 			AActor::StaticClass(),
@@ -104,7 +104,7 @@ void ACppUnit::Tick(float DeltaTime)
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)
 		{
-			return IsHostileTo(InActor) && !UCppBloodlustAwakeningGameplayStatics::IsInvincible(InActor);
+			return IsHostileTo(InActor) && !UCppGameplayStatics::IsInvincible(InActor);
 		});
 		if (IsValid(NearestDamageableHostile))
 		{

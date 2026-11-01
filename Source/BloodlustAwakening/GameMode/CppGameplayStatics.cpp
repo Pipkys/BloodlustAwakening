@@ -1,15 +1,15 @@
-#include "BloodlustAwakening/GameMode/CppBloodlustAwakeningGameplayStatics.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 
-bool UCppBloodlustAwakeningGameplayStatics::IsActorInRange(AActor* InActor,
+bool UCppGameplayStatics::IsActorInRange(AActor* InActor,
 	float InRange,
 	const FVector& InLocation)
 {
 	return FVector::DistSquared(InLocation, InActor->GetActorLocation()) <= InRange * InRange;
 }
 
-AActor* UCppBloodlustAwakeningGameplayStatics::FindActorByPredicate(UObject* InWorldContextObject,
+AActor* UCppGameplayStatics::FindActorByPredicate(UObject* InWorldContextObject,
 	float InRange,
 	const TArray<TEnumAsByte<ECollisionChannel>>& InActorTypes,
 	UClass* InActorClassFilter,
@@ -29,7 +29,7 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindActorByPredicate(UObject* InW
 	return nullptr;
 }
 
-TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActors(UObject* InWorldContextObject,
+TArray<AActor*> UCppGameplayStatics::FindActors(UObject* InWorldContextObject,
 	float InRange,
 	const TArray<TEnumAsByte<ECollisionChannel>>& InActorTypes,
 	UClass* InActorClassFilter,
@@ -53,7 +53,7 @@ TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActors(UObject* InWor
 	return Result;
 }
 
-TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActorsByPredicate(UObject* InWorldContextObject,
+TArray<AActor*> UCppGameplayStatics::FindActorsByPredicate(UObject* InWorldContextObject,
 	float InRange,
 	const TArray<TEnumAsByte<ECollisionChannel>>& InActorTypes,
 	UClass* InActorClassFilter,
@@ -74,7 +74,7 @@ TArray<AActor*> UCppBloodlustAwakeningGameplayStatics::FindActorsByPredicate(UOb
 	return Result;
 }
 
-AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActor(const TArray<AActor*>& InActors,
+AActor* UCppGameplayStatics::FindNearestActor(const TArray<AActor*>& InActors,
 	float InRange,
 	const FVector& InLocation)
 {
@@ -96,7 +96,7 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActor(const TArray<AAc
 	return NearestActor;
 }
 
-AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
+AActor* UCppGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
 	float InRange,
 	const FVector& InLocation,
 	const FCppActorPredicate& InPredicate)
@@ -123,7 +123,7 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const
 	return NearestActor;
 }
 
-AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
+AActor* UCppGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
 	float InRange,
 	const FVector& InLocation,
 	const TFunctionRef<bool(AActor*)>& InPredicate)
@@ -150,7 +150,7 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const
 	return NearestActor;
 }
 
-ACppUnit* UCppBloodlustAwakeningGameplayStatics::SpawnUnit(UObject* InWorldContextObject,
+ACppUnit* UCppGameplayStatics::SpawnUnit(UObject* InWorldContextObject,
 	TSubclassOf<ACppUnit> InClass,
 	const FTransform& InTransform,
 	const FCppUnitSpawnParameters& InSpawnParameters)
@@ -165,7 +165,7 @@ ACppUnit* UCppBloodlustAwakeningGameplayStatics::SpawnUnit(UObject* InWorldConte
 	return Unit;
 }
 
-ACppDecoration* UCppBloodlustAwakeningGameplayStatics::SpawnDecoration(UObject* InWorldContextObject,
+ACppDecoration* UCppGameplayStatics::SpawnDecoration(UObject* InWorldContextObject,
 	TSubclassOf<ACppDecoration> InClass,
 	const FTransform& InTransform,
 	const FCppActorSpawnParameters& InSpawnParameters)
@@ -176,7 +176,7 @@ ACppDecoration* UCppBloodlustAwakeningGameplayStatics::SpawnDecoration(UObject* 
 	return Decoration;
 }
 
-ACppSpawner* UCppBloodlustAwakeningGameplayStatics::SpawnSpawner(UObject* InWorldContextObject,
+ACppSpawner* UCppGameplayStatics::SpawnSpawner(UObject* InWorldContextObject,
 	TSubclassOf<ACppSpawner> InClass,
 	const FTransform& InTransform,
 	const FCppActorSpawnParameters& InSpawnParameters)
@@ -187,7 +187,7 @@ ACppSpawner* UCppBloodlustAwakeningGameplayStatics::SpawnSpawner(UObject* InWorl
 	return Spawner;
 }
 
-ACppTower* UCppBloodlustAwakeningGameplayStatics::SpawnTower(UObject* InWorldContextObject,
+ACppTower* UCppGameplayStatics::SpawnTower(UObject* InWorldContextObject,
 	TSubclassOf<ACppTower> InClass,
 	const FTransform& InTransform,
 	const FCppTowerSpawnParameters& InSpawnParameters)
@@ -202,7 +202,7 @@ ACppTower* UCppBloodlustAwakeningGameplayStatics::SpawnTower(UObject* InWorldCon
 	return Tower;
 }
 
-ACppProjectile* UCppBloodlustAwakeningGameplayStatics::SpawnProjectile(UObject* InWorldContextObject,
+ACppProjectile* UCppGameplayStatics::SpawnProjectile(UObject* InWorldContextObject,
 	TSubclassOf<ACppProjectile> InClass,
 	const FTransform& InTransform,
 	const FCppProjectileSpawnParameters& InSpawnParameters)

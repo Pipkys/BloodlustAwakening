@@ -1,9 +1,9 @@
-﻿#include "BloodlustAwakening/Buildings/Implementation/CppBuilding.h"
+#include "BloodlustAwakening/Buildings/Implementation/CppBuilding.h"
 
 #include "BloodlustAwakening/Buildings/Implementation/CppBuildingStats.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/GameMode/CppBloodlustAwakeningGameplayStatics.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Subsystems/CppBuildingRegistry.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
@@ -90,7 +90,7 @@ float ACppBuilding::TakeDamage(float InBaseDamage,
 	class AController* InEventInstigator,
 	AActor* InDamageCauser)
 {
-	return UCppBloodlustAwakeningGameplayStatics::IsInvincible(this)
+	return UCppGameplayStatics::IsInvincible(this)
 		? 0.f
 		: Super::TakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser);
 }

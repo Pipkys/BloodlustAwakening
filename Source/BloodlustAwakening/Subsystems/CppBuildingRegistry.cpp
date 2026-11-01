@@ -2,6 +2,8 @@
 
 void UCppBuildingRegistry::RegisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding, const TArray<ACppCell*>& InOccupiedCells)
 {
+	UCppBuildingRegistry* Instance = InBuilding.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
 	if (Buildings.FindByPredicate([InBuilding](TScriptInterface<ICppGridPlaceable>& Building)
 	{
 		return Building == InBuilding;
@@ -11,32 +13,28 @@ void UCppBuildingRegistry::RegisterBuilding(TScriptInterface<ICppGridPlaceable> 
 		return;
 	}
 	InBuilding->GetOccupiedCells() = InOccupiedCells;
-	for (ACppCell* Cell : InBuilding->GetOccupiedCells())
-	{
-		Cell->bIsOccupied = true;
-	}
 	Buildings.Add(InBuilding);
 }
 
 void UCppBuildingRegistry::UnregisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding)
 {
+	UCppBuildingRegistry* Instance = InBuilding.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
 	for (int32 Index = 0; Index < Buildings.Num(); ++Index)
 	{
 		if (Buildings[Index] == InBuilding)
 		{
 			Buildings.RemoveAt(Index);
-			for (ACppCell* Cell : InBuilding->GetOccupiedCells())
-			{
-				Cell->bIsOccupied = false;
-			}
 			return;
 		}
 	}
 	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::UnregisterBuilding: Attempting to unregister not registred building"));
 }
 
-void UCppBuildingRegistry::RegisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration, const TArray<ACppCell*>& InOccupiedCells, bool bSmallEnough)
+void UCppBuildingRegistry::RegisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration, const TArray<ACppCell*>& InOccupiedCells)
 {
+	UCppBuildingRegistry* Instance = InDecoration.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Decorations = Instance->Decorations;
 	if (Decorations.FindByPredicate([InDecoration](TScriptInterface<ICppGridPlaceable>& Decoration)
 	{
 		return Decoration == InDecoration;
@@ -46,27 +44,18 @@ void UCppBuildingRegistry::RegisterDecoration(TScriptInterface<ICppGridPlaceable
 		return;
 	}
 	InDecoration->GetOccupiedCells() = InOccupiedCells;
-	if (!bSmallEnough)
-	{
-		for (ACppCell* Cell : InDecoration->GetOccupiedCells())
-		{
-			Cell->bIsOccupied = true;
-		}
-	}
 	Decorations.Add(InDecoration);
 }
 
 void UCppBuildingRegistry::UnregisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration)
 {
+	UCppBuildingRegistry* Instance = InDecoration.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Decorations = Instance->Decorations;
 	for (int32 Index = 0; Index < Decorations.Num(); ++Index)
 	{
 		if (Decorations[Index] == InDecoration)
 		{
 			Decorations.RemoveAt(Index);
-			for (ACppCell* Cell : InDecoration->GetOccupiedCells())
-			{
-				Cell->bIsOccupied = false;
-			}
 			return;
 		}
 	}
@@ -75,6 +64,8 @@ void UCppBuildingRegistry::UnregisterDecoration(TScriptInterface<ICppGridPlaceab
 
 void UCppBuildingRegistry::RegisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner, const TArray<ACppCell*>& InOccupiedCells)
 {
+	UCppBuildingRegistry* Instance = InSpawner.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Spawners = Instance->Spawners;
 	if (Spawners.FindByPredicate([InSpawner](TScriptInterface<ICppGridPlaceable>& Spawner)
 	{
 		return Spawner == InSpawner;
@@ -84,24 +75,18 @@ void UCppBuildingRegistry::RegisterSpawner(TScriptInterface<ICppGridPlaceable> I
 		return;
 	}
 	InSpawner->GetOccupiedCells() = InOccupiedCells;
-	for (ACppCell* Cell : InSpawner->GetOccupiedCells())
-	{
-		Cell->bIsOccupied = true;
-	}
 	Spawners.Add(InSpawner);
 }
 
 void UCppBuildingRegistry::UnregisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner)
 {
+	UCppBuildingRegistry* Instance = InSpawner.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Spawners = Instance->Spawners;
 	for (int32 Index = 0; Index < Spawners.Num(); ++Index)
 	{
 		if (Spawners[Index] == InSpawner)
 		{
 			Spawners.RemoveAt(Index);
-			for (ACppCell* Cell : InSpawner->GetOccupiedCells())
-			{
-				Cell->bIsOccupied = false;
-			}
 			return;
 		}
 	}
@@ -110,6 +95,8 @@ void UCppBuildingRegistry::UnregisterSpawner(TScriptInterface<ICppGridPlaceable>
 
 TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCells(const TArray<ACppCell*>& InOccupiedCells)
 {
+	UCppBuildingRegistry* Instance = InOccupiedCells.Last()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
 	if (TScriptInterface<ICppGridPlaceable>* Building
 		= Buildings.FindByPredicate([InOccupiedCells](TScriptInterface<ICppGridPlaceable>& Building)
 	{
@@ -133,8 +120,11 @@ TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedC
 	return nullptr;
 }
 
-TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCellCoords(const TArray<FIntPoint>& InOccupiedCells)
+TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCellCoords(UObject* InWorldContextObject,
+	const TArray<FIntPoint>& InOccupiedCells)
 {
+	UCppBuildingRegistry* Instance = InWorldContextObject->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
 	if (TScriptInterface<ICppGridPlaceable>* Building
 		= Buildings.FindByPredicate([InOccupiedCells](TScriptInterface<ICppGridPlaceable>& Building)
 	{

@@ -4,7 +4,7 @@
 #include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/GameMode/CppBloodlustAwakeningGameplayStatics.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Interface/CppEntity.h"
 #include "BloodlustAwakening/Projectiles/CppProjectile.h"
 #include "BloodlustAwakening/Projectiles/CppProjectileSpawnParameters.h"
@@ -171,7 +171,7 @@ void UCppAttackComponent::PerformRangedAttack(AActor* InTarget, const FTransform
 	ProjectileSpawnParameters.InitialSpeed = ProjectileInitialSpeed;
 	ProjectileSpawnParameters.MaxSpeed = ProjectileMaxSpeed;
 	ProjectileSpawnParameters.OverlapRadius = ProjectileOverlapRadius;
-	ACppProjectile* Projectile = UCppBloodlustAwakeningGameplayStatics::SpawnProjectile(GetWorld(),
+	ACppProjectile* Projectile = UCppGameplayStatics::SpawnProjectile(GetWorld(),
 		ProjectileClass,
 		InAttackPointTransform,
 		ProjectileSpawnParameters);
@@ -194,7 +194,7 @@ void UCppAttackComponent::AppendCleaveTargets(AActor* InPrimaryTarget, TArray<AA
 		return;
 	}
 	const TArray<TEnumAsByte<ECollisionChannel>> TargetTypes{ ECC_Unit, ECC_Building };
-	TArray<AActor*> Found = UCppBloodlustAwakeningGameplayStatics::FindActors(Owner,
+	TArray<AActor*> Found = UCppGameplayStatics::FindActors(Owner,
 		CleaveRadius,
 		TargetTypes,
 		AActor::StaticClass(),

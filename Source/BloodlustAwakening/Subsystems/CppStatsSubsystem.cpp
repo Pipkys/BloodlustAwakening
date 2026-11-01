@@ -17,11 +17,12 @@ FCppStats* UCppStatsSubsystem::LoadStats(TScriptInterface<ICppEntity> InEntity, 
 		UE_LOG(LogTemp, Error, TEXT("UCppStatsSubsystem::LoadStats: '%s' has no stats component"), *EntityObject->GetName());
 		return nullptr;
 	}
-	if (FCppStats* Loaded = StatsComponent->GetCachedStats(InType))
+	if (FCppStats* Cached = StatsComponent->FindCachedStats(InType))
 	{
-		return Loaded;
+		return Cached;
 	}
-	TObjectPtr<UDataTable>* FoundStatsDatabase = StatsDatabases.Find(InType);
+	UCppStatsSubsystem* Instance = InEntity.GetObject()->GetWorld()->GetSubsystem<UCppStatsSubsystem>();
+	TObjectPtr<UDataTable>* FoundStatsDatabase = Instance->StatsDatabases.Find(InType);
 	if (!FoundStatsDatabase)
 	{
 		UE_LOG(LogTemp,
@@ -31,8 +32,8 @@ FCppStats* UCppStatsSubsystem::LoadStats(TScriptInterface<ICppEntity> InEntity, 
 		return nullptr;
 	}
 	FName RowName = FCppStats::GetArchetypeRowName(EntityObject->GetClass());
-	FCppStats* EntityStats = (*FoundStatsDatabase)->FindRow<FCppStats>(RowName, TEXT("UCppStatsSubsystem::LoadStats"), true);
-	if (!EntityStats)
+	FCppStats* Stats = (*FoundStatsDatabase)->FindRow<FCppStats>(RowName, TEXT("UCppStatsSubsystem::LoadStats"), true);
+	if (!Stats)
 	{
 		UE_LOG(LogTemp,
 			Error,
@@ -42,6 +43,10 @@ FCppStats* UCppStatsSubsystem::LoadStats(TScriptInterface<ICppEntity> InEntity, 
 			*FoundStatsDatabase->GetName());
 		return nullptr;
 	}
-	StatsComponent->CacheStats(InType, *FoundStatsDatabase, EntityStats);
-	return EntityStats;
+	StatsComponent->CacheStats(InType, *FoundStatsDatabase, Stats);
+	for (TPair<ECppStatsType, FCppStats*>& StatsSectionPair : Stats->GetStatsSections())
+	{
+		StatsComponent->CacheStats(StatsSectionPair.Key, nullptr, StatsSectionPair.Value);
+	}
+	return Stats;
 }

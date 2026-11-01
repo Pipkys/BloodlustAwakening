@@ -6,6 +6,7 @@ DerivedDataCache/
 enc_temp_folder/
 Intermediate/
 Saved/
+dsh-acl-recovery/
 *.vsconfig
 *.sln
 *.slnx

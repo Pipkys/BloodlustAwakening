@@ -16,6 +16,12 @@ struct BLOODLUSTAWAKENING_API FCppBuildingStatsDatabaseRow : public FCppStatsDat
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
 	int32 SizeInCells = 1;
+
+public:
+	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override
+	{
+		return {};
+	}
 };
 
 using FCppBuildingStats = FCppBuildingStatsDatabaseRow;

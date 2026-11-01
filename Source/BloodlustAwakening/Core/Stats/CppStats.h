@@ -13,6 +13,10 @@ struct BLOODLUSTAWAKENING_API FCppStatsDatabaseRow : public FTableRowBase
 
 public:
 	static FName GetArchetypeRowName(const UClass* InClass);
+	virtual TArray<TPair<ECppStatsType, FCppStatsDatabaseRow*>> GetStatsSections()
+	{
+		PURE_VIRTUAL(FCppStatsDatabaseRow::GetStatsSections) return {};
+	}
 };
 
 using FCppStats = FCppStatsDatabaseRow;
@@ -109,3 +113,5 @@ enum class ECppStatsType : uint8
 
 template<ECppStatsType>
 struct TCppStatsTypeTraits;
+
+

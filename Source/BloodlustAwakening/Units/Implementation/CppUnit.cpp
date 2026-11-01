@@ -61,7 +61,6 @@ void ACppUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	TeamSubsystem = GetWorld()->GetSubsystem<UCppTeamSubsystem>();
-	StatsSubsystem = GetWorld()->GetSubsystem<UCppStatsSubsystem>();
 	AIController = (ACppAIController*)GetController();
 }
 
@@ -95,19 +94,23 @@ void ACppUnit::Tick(float DeltaTime)
 		const TArray<AActor*>& DamageableActorsAround = UCppBloodlustAwakeningGameplayStatics::FindActors(this,
 			DetectionRange,
 			{ ECC_Building },
-			ICppDamageable::UClassType::StaticClass(),
+			AActor::StaticClass(),
 			{ this },
 			AttackPointTransform.GetLocation());
 		if (DamageableActorsAround.IsEmpty())
 		{
 			return;
 		}
-		AActor* NearestDamageableActor = UCppBloodlustAwakeningGameplayStatics::FindNearestActor(DamageableActorsAround,
+		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(DamageableActorsAround,
 			DetectionRange,
-			AttackPointTransform.GetLocation());
-		if (IsValid(NearestDamageableActor) && IsHostileTo(NearestDamageableActor))
+			AttackPointTransform.GetLocation(),
+			[this](AActor* InActor)
 		{
-			LockOnTarget(NearestDamageableActor);
+			return IsHostileTo(InActor) && !UCppBloodlustAwakeningGameplayStatics::IsInvincible(InActor);
+		});
+		if (IsValid(NearestDamageableHostile))
+		{
+			LockOnTarget(NearestDamageableHostile);
 		}
 	}
 }
@@ -115,26 +118,7 @@ void ACppUnit::Tick(float DeltaTime)
 void ACppUnit::Setup(const FCppUnitSpawnParameters& InSpawnParameters)
 {
 	TeamComponent->Team = InSpawnParameters.Team;
-	AttackPointComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AttackPointComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AttackPointComponent->SetCanEverAffectNavigation(false);
-	if (!StatsSubsystem)
-	{
-		StatsSubsystem = GetWorld()->GetSubsystem<UCppStatsSubsystem>();
-	}
-	FCppUnitStats* UnitStats = UCppStatsSubsystem::LoadCppStatsAs<ECppStatsType::Unit>(this);
-	if (UnitStats)
-	{
-		DetectionRange = UnitStats->DetectionRange;
-		if (GetCharacterMovement())
-		{
-			GetCharacterMovement()->MaxWalkSpeed = UnitStats->MaxWalkSpeed;
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ACppUnit::Setup: failed to load Unit stats"));
-	}
+	LoadStats();
 	HealthComponent->SetupComponent(this, InSpawnParameters);
 	AttackComponent->SetupComponent(this, InSpawnParameters);
 }
@@ -162,6 +146,17 @@ UCppTeam* ACppUnit::GetTeam() const
 bool ACppUnit::IsHostileTo(TScriptInterface<ICppEntity> InOther) const
 {
 	return TeamSubsystem ? TeamSubsystem->IsHostile((UObject*)this, InOther) : false;
+}
+
+void ACppUnit::LoadStats()
+{
+	if (FCppUnitStats* Stats = UCppStatsSubsystem::LoadStats<ECppStatsType::Unit>(this))
+	{
+		DetectionRange = Stats->DetectionRange;
+		GetCharacterMovement()->MaxWalkSpeed = Stats->MaxWalkSpeed;
+		return;
+	}
+	UE_LOG(LogTemp, Error, TEXT("ACppUnit::LoadStats: failed to load unit stats"));
 }
 
 float ACppUnit::TakeDamage(float InBaseDamage,

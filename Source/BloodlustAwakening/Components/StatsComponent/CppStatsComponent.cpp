@@ -31,3 +31,9 @@ FCppStats* UCppStatsComponent::GetCachedStats(ECppStatsType InType) const
 	}
 	return StatsCache->Stats;
 }
+
+FCppStats* UCppStatsComponent::FindCachedStats(ECppStatsType InType) const
+{
+	const FCppStatsCache* StatsCache = CachedStats.Find(InType);
+	return StatsCache ? StatsCache->Stats : nullptr;
+}

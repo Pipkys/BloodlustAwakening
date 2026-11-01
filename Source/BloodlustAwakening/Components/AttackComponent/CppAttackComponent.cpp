@@ -25,7 +25,7 @@ void UCppAttackComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UCppAttackComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnParameters& InSpawnParameters)
 {
-	FCppAttackStats* Stats = UCppStatsSubsystem::LoadCppStatsAs<ECppStatsType::Attack>(InOwner);
+	FCppAttackStats* Stats = UCppStatsSubsystem::LoadStats<ECppStatsType::Attack>(InOwner);
 	if (!Stats)
 	{
 		UE_LOG(LogTemp, Error, TEXT("UCppAttackComponent::SetupComponent: failed to load attack stats for '%s'"), *GetNameSafe(InOwner));
@@ -41,6 +41,7 @@ void UCppAttackComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnPa
 	bSingleTarget = Stats->bSingleTarget;
 	CleaveRadius = Stats->CleaveRadius;
 	ProjectileClass = Stats->ProjectileClass;
+	ShotEffect = Stats->ShotEffect;
 	bProjectileRotationFollowsVelocity = Stats->bProjectileRotationFollowsVelocity;
 	ProjectileGravityScale = Stats->ProjectileGravityScale;
 	bIsHomingProjectile = Stats->bIsHomingProjectile;
@@ -67,8 +68,7 @@ float UCppAttackComponent::GetRange() const
 
 bool UCppAttackComponent::IsTargetInAttackRange(AActor* InTarget, const FTransform& InPointTransform) const
 {
-	return IsValid(InTarget)
-		&& FVector::Distance(InPointTransform.GetLocation(), InTarget->GetActorLocation()) <= GetRange();
+	return FVector::Distance(InPointTransform.GetLocation(), InTarget->GetActorLocation()) <= GetRange();
 }
 
 bool UCppAttackComponent::IsCanAttack() const
@@ -79,17 +79,11 @@ bool UCppAttackComponent::IsCanAttack() const
 
 bool UCppAttackComponent::IsCanAttackTarget(AActor* InTarget, const FTransform& InPointTransform) const
 {
-	return IsCanAttack()
-		&& IsTargetInAttackRange(InTarget, InPointTransform)
-		&& !UCppBloodlustAwakeningGameplayStatics::IsInvincible(InTarget);
+	return IsCanAttack() && IsTargetInAttackRange(InTarget, InPointTransform);
 }
 
 void UCppAttackComponent::PerformAttack(AActor* InTarget, const FTransform& InAttackPointTransform)
 {
-	if (!IsCanAttackTarget(InTarget, InAttackPointTransform))
-	{
-		return;
-	}
 	switch (AttackType)
 	{
 		case ECppAttackType::Melee:

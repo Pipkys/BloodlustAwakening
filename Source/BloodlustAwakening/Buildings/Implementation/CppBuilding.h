@@ -66,6 +66,9 @@ public:
 	UCppStatsComponent* GetStatsComponent() override;
 	UCppTeam* GetTeam() const override;
 	bool IsHostileTo(TScriptInterface<ICppEntity> InOther) const override;
+	
+protected:
+	void LoadStats() override;
 
 public:
 	float TakeDamage(float InBaseDamage,

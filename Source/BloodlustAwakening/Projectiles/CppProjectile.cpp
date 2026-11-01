@@ -7,10 +7,11 @@
 
 ACppProjectile::ACppProjectile()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	OverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
 	OverlapComponent->SetupAttachment(RootComponent);
 	OverlapComponent->SetCollisionObjectType(ECC_Projectile);
-	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	OverlapComponent->SetCollisionResponseToChannel(ECC_Building, ECR_Overlap);
 	OverlapComponent->SetCollisionResponseToChannel(ECC_Unit, ECR_Overlap);
@@ -21,17 +22,8 @@ ACppProjectile::ACppProjectile()
 void ACppProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	PrimaryActorTick.bCanEverTick = false;
 	SetActorTickEnabled(false);
 	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this, &ACppProjectile::OnBeginOverlap);
-	UNiagaraFunctionLibrary::SpawnSystemAttached(
-		ShotEffect,
-		OverlapComponent,
-		"ShotEffect",
-		FVector::Zero(),
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
-		true);
 }
 
 void ACppProjectile::Tick(float DeltaTime)
@@ -39,7 +31,7 @@ void ACppProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (!IsValid(CurrentTarget))
 	{
-		Destroy();
+		Explode();
 	}
 }
 
@@ -67,11 +59,18 @@ void ACppProjectile::LockOnTarget(AActor* InTarget)
 	}
 	CurrentTarget = InTarget;
 	MovementComponent->HomingTargetComponent = CurrentTarget->GetRootComponent();
-	if (!PrimaryActorTick.bCanEverTick)
+	if (!IsActorTickEnabled())
 	{
-		PrimaryActorTick.bCanEverTick = true;
 		SetActorTickEnabled(true);
 	}
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		ShotEffect,
+		OverlapComponent,
+		"ShotEffect",
+		FVector::Zero(),
+		FRotator::ZeroRotator,
+		EAttachLocation::KeepRelativeOffset,
+		true);
 }
 
 void ACppProjectile::OnBeginOverlap(UPrimitiveComponent* InOverlappedComponent,

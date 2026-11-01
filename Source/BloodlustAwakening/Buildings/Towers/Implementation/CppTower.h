@@ -50,6 +50,9 @@ protected:
 public:
 	virtual void Setup(const FCppBuildingSpawnParameters& InSpawnParameters);
 
+protected:
+	void LoadStats() override;
+
 public:
 	float TakeDamage(float InBaseDamage,
 		struct FDamageEvent const& InDamageEvent,

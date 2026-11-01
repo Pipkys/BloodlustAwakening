@@ -30,4 +30,5 @@ private:
 public:
 	void CacheStats(ECppStatsType InType, UDataTable* InDatabase, FCppStats* InStats);
 	FCppStats* GetCachedStats(ECppStatsType InType) const;
+	FCppStats* FindCachedStats(ECppStatsType InType) const;
 };

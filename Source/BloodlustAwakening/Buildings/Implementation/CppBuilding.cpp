@@ -48,10 +48,7 @@ void ACppBuilding::Tick(float DeltaTime)
 void ACppBuilding::Setup(const FCppBuildingSpawnParameters& InSpawnParameters)
 {
 	TeamComponent->Team = InSpawnParameters.Team;
-	if (FCppBuildingStats* Stats = UCppStatsSubsystem::LoadCppStatsAs<ECppStatsType::Building>(this))
-	{
-		SizeInCells = Stats->SizeInCells;
-	}
+	LoadStats();
 }
 
 UStaticMeshComponent* ACppBuilding::GetStaticMeshComponent()
@@ -77,6 +74,16 @@ UCppTeam* ACppBuilding::GetTeam() const
 bool ACppBuilding::IsHostileTo(TScriptInterface<ICppEntity> InOther) const
 {
 	return TeamSubsystem->IsHostile((UObject*)this, InOther);
+}
+
+void ACppBuilding::LoadStats()
+{
+	if (FCppBuildingStats* Stats = UCppStatsSubsystem::LoadStats<ECppStatsType::Building>(this))
+	{
+		SizeInCells = Stats->SizeInCells;
+		return;
+	}
+	UE_LOG(LogTemp, Error, TEXT("ACppBuilding::LoadStats: failed to load building stats"));
 }
 
 float ACppBuilding::TakeDamage(float InBaseDamage,

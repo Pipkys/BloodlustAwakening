@@ -74,6 +74,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Ranged|Projectile")
 	float ProjectileOverlapRadius = 4.f;
+
+public:
+	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override
+	{
+		return {};
+	}
 };
 
 using FCppAttackStats = FCppAttackStatsDatabaseRow;

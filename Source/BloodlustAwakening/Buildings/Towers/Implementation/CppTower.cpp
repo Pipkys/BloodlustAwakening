@@ -11,10 +11,8 @@
 ACppTower::ACppTower()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	HealthComponent = CreateDefaultSubobject<UCppHealthComponent>("HealthComponent");
 	AttackComponent = CreateDefaultSubobject<UCppAttackComponent>("AttackComponent");
-
 	AttackPointComponent = CreateDefaultSubobject<USphereComponent>("AttackPointComponent");
 	AttackPointComponent->SetupAttachment(RootComponent);
 	AttackPointComponent->SetCollisionObjectType(ECC_Trigger);
@@ -58,19 +56,23 @@ void ACppTower::Tick(float DeltaTime)
 		const TArray<AActor*>& DamageableActorsAround = UCppBloodlustAwakeningGameplayStatics::FindActors(this,
 			AttackRange,
 			{ ECC_Unit },
-			ICppDamageable::UClassType::StaticClass(),
+			AActor::StaticClass(),
 			{ this },
 			AttackPointTransform.GetLocation());
 		if (DamageableActorsAround.IsEmpty())
 		{
 			return;
 		}
-		AActor* NearestDamageableActor = UCppBloodlustAwakeningGameplayStatics::FindNearestActor(DamageableActorsAround,
+		AActor* NearestDamageableHostile = UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(DamageableActorsAround,
 			AttackRange,
-			AttackPointTransform.GetLocation());
-		if (IsValid(NearestDamageableActor) && IsHostileTo(NearestDamageableActor))
+			AttackPointTransform.GetLocation(),
+			[this](AActor* InActor)
 		{
-			LockOnTarget(NearestDamageableActor);
+			return IsHostileTo(InActor) && !UCppBloodlustAwakeningGameplayStatics::IsInvincible(InActor);
+		});
+		if (IsValid(NearestDamageableHostile))
+		{
+			LockOnTarget(NearestDamageableHostile);
 		}
 	}
 }
@@ -78,18 +80,17 @@ void ACppTower::Tick(float DeltaTime)
 void ACppTower::Setup(const FCppBuildingSpawnParameters& InSpawnParameters)
 {
 	Super::Setup(InSpawnParameters);
-
-	AttackPointComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AttackPointComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AttackPointComponent->SetCanEverAffectNavigation(false);
-
-	if (!UCppStatsSubsystem::LoadCppStatsAs<ECppStatsType::Tower>(this))
-	{
-		UE_LOG(LogTemp, Error, TEXT("ACppTower::Setup: Failed to load Tower stats"));
-	}
-
 	HealthComponent->SetupComponent(this, InSpawnParameters);
 	AttackComponent->SetupComponent(this, InSpawnParameters);
+}
+
+void ACppTower::LoadStats()
+{
+	if (!UCppStatsSubsystem::LoadStats<ECppStatsType::Tower>(this))
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACppTower::LoadStats: failed to load tower stats"));
+	}
+	Super::LoadStats();
 }
 
 float ACppTower::TakeDamage(float InBaseDamage,
@@ -101,9 +102,7 @@ float ACppTower::TakeDamage(float InBaseDamage,
 	{
 		return 0.0f;
 	}
-	return HealthComponent
-		? HealthComponent->OnTakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser)
-		: 0.0f;
+	return HealthComponent ? HealthComponent->OnTakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser) : 0.f;
 }
 
 UCppHealthComponent* ACppTower::GetHealthComponent()

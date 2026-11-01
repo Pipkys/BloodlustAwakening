@@ -4,10 +4,10 @@
 
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
 
-#include "CppTowerOfBlood.generated.h"
+#include "CppBasicTower.generated.h"
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BloodlustAwakening")
-class BLOODLUSTAWAKENING_API ACppTowerOfBlood : public ACppTower
+class BLOODLUSTAWAKENING_API ACppBasicTower : public ACppTower
 {
 	GENERATED_BODY()
 

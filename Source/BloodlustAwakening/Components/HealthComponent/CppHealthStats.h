@@ -16,6 +16,12 @@ struct BLOODLUSTAWAKENING_API FCppHealthStatsDatabaseRow : public FCppStatsDatab
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth = 0.f;
+
+public:
+	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override
+	{
+		return {};
+	}
 };
 
 using FCppHealthStats = FCppHealthStatsDatabaseRow;

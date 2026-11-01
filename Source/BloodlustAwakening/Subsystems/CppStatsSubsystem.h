@@ -20,7 +20,7 @@ public:
 
 public:
 	template<ECppStatsType InStatsType>
-	static typename TCppStatsTypeTraits<InStatsType>::Type* LoadCppStatsAs(TScriptInterface<ICppEntity> InEntity)
+	static typename TCppStatsTypeTraits<InStatsType>::Type* LoadStats(TScriptInterface<ICppEntity> InEntity)
 	{
 		UWorld* World = InEntity.GetObject()->GetWorld();
 		UCppStatsSubsystem* Subsystem = World ? World->GetSubsystem<UCppStatsSubsystem>() : nullptr;
@@ -31,5 +31,5 @@ public:
 		return static_cast<typename TCppStatsTypeTraits<InStatsType>::Type*>(Subsystem->LoadStats(InEntity, InStatsType));
 	}
 
-	FCppStats* LoadStats(TScriptInterface<ICppEntity> InEntity, ECppStatsType InType);
+	static FCppStats* LoadStats(TScriptInterface<ICppEntity> InEntity, ECppStatsType InType);
 };

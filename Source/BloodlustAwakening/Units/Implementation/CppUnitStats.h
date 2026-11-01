@@ -27,6 +27,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float MaxWalkSpeed = 0.f;
+
+public:
+	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override
+	{
+		return
+		{
+			{ ECppStatsType::Health, &Health },
+			{ ECppStatsType::Attack, &Attack }
+		};
+	}
 };
 
 using FCppUnitStats = FCppUnitStatsDatabaseRow;

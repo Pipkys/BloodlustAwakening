@@ -7,7 +7,7 @@
 
 void UCppHealthComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnParameters& InSpawnParameters)
 {
-	FCppHealthStats* Stats = UCppStatsSubsystem::LoadCppStatsAs<ECppStatsType::Health>(InOwner);
+	FCppHealthStats* Stats = UCppStatsSubsystem::LoadStats<ECppStatsType::Health>(InOwner);
 	if (!Stats)
 	{
 		UE_LOG(LogTemp, Error, TEXT("UCppHealthComponent::SetupComponent: failed to load health stats for '%s'"), *GetNameSafe(InOwner));

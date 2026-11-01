@@ -72,9 +72,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UCppTeamSubsystem> TeamSubsystem;
 
-	UPROPERTY()
-	TObjectPtr<UCppStatsSubsystem> StatsSubsystem;
-
 protected:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
@@ -88,6 +85,9 @@ public:
 	UCppStatsComponent* GetStatsComponent() override;
 	UCppTeam* GetTeam() const override;
 	bool IsHostileTo(TScriptInterface<ICppEntity> InOther) const override;
+
+protected:
+	void LoadStats() override;
 
 public:
 	float TakeDamage(float InBaseDamage,

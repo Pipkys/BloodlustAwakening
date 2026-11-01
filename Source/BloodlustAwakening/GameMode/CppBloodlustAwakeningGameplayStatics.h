@@ -75,6 +75,11 @@ public:
 		const FVector& InLocation,
 		const FCppActorPredicate& InPredicate);
 
+	static AActor* FindNearestActorByPredicate(const TArray<AActor*>& InActors,
+		float InRange,
+		const FVector& InLocation,
+		const TFunctionRef<bool(AActor*)>& InPredicate);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Spawn", Meta = (WorldContext = "InWorldContextObject"))
 	static ACppUnit* SpawnUnit(UObject* InWorldContextObject,

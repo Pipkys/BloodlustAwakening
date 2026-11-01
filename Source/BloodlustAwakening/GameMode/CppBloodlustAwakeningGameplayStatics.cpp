@@ -125,6 +125,23 @@ AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const
 	return FindNearestActor(Filtered, InRange, InLocation);
 }
 
+AActor* UCppBloodlustAwakeningGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
+	float InRange,
+	const FVector& InLocation,
+	const TFunctionRef<bool(AActor*)>& InPredicate)
+{
+	TArray<AActor*> Filtered;
+	for (AActor* Actor : InActors)
+	{
+		if (InPredicate(Actor))
+		{
+			Filtered.Add(Actor);
+		}
+	}
+
+	return FindNearestActor(Filtered, InRange, InLocation);
+}
+
 ACppUnit* UCppBloodlustAwakeningGameplayStatics::SpawnUnit(UObject* InWorldContextObject,
 	TSubclassOf<ACppUnit> InClass,
 	const FTransform& InTransform,

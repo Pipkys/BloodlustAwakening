@@ -38,4 +38,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Team")
     virtual bool IsHostileTo(TScriptInterface<ICppEntity> InOther) const = 0;
+
+protected:
+    virtual void LoadStats() = 0;
 };

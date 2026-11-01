@@ -25,6 +25,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
 	FCppBuildingStatsDatabaseRow Building;
+
+public:
+	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override
+	{
+		return
+		{
+			{ ECppStatsType::Health, &Health },
+			{ ECppStatsType::Attack, &Attack },
+			{ ECppStatsType::Building, &Building }
+		};
+	}
 };
 
 using FCppTowerStats = FCppTowerStatsDatabaseRow;

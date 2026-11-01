@@ -28,7 +28,12 @@ class BLOODLUSTAWAKENING_API UCppTeamLink : public UObject
 	GENERATED_BODY()
 
 public:
-	UCppTeam* FirstTeam;
-	UCppTeam* SecondTeam;
-	ECppTeamRelationship Relationship;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
+	TObjectPtr<UCppTeam> FirstTeam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
+	TObjectPtr<UCppTeam> SecondTeam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
+	ECppTeamRelationship Relationship = ECppTeamRelationship::Neutral;
 };

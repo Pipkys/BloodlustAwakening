@@ -37,7 +37,6 @@ void ACppBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 	TeamSubsystem = GetWorld()->GetSubsystem<UCppTeamSubsystem>();
-	StatsSubsystem = GetWorld()->GetSubsystem<UCppStatsSubsystem>();
 }
 
 void ACppBuilding::Tick(float DeltaTime)

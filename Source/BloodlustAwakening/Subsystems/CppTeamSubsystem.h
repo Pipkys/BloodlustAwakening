@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 
@@ -13,8 +13,11 @@ class BLOODLUSTAWAKENING_API UCppTeamSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 private:
-	TArray<UCppTeam*> Teams;
-	TArray<UCppTeamLink*> Links;
+	UPROPERTY()
+	TArray<TObjectPtr<UCppTeam>> Teams;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UCppTeamLink>> Links;
 
 private:
 	bool ResolveRelationship(TScriptInterface<ICppEntity> InFirstEntity,

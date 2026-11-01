@@ -50,8 +50,8 @@ public:
 	int32 SizeInCells;
 
 protected:
+	UPROPERTY()
 	TObjectPtr<UCppTeamSubsystem> TeamSubsystem;
-	TObjectPtr<UCppStatsSubsystem> StatsSubsystem;
 
 protected:
 	void BeginPlay() override;

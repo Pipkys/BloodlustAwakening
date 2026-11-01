@@ -2,7 +2,7 @@
 
 UCppTeam* UCppTeamSubsystem::GetTeam(const FName& InName)
 {
-	UCppTeam** Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; });
+	TObjectPtr<UCppTeam>* Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; });
 	if (!Found)
 	{
 		UE_LOG(LogTemp, Error, TEXT("UCppTeamSubsystem::GetTeam: Team '%s' not found"), *InName.ToString());
@@ -29,7 +29,7 @@ UCppTeamLink* UCppTeamSubsystem::GetTeamLink(TScriptInterface<ICppEntity> InFirs
 	{
 		return nullptr;
 	}
-	UCppTeamLink** Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
+	TObjectPtr<UCppTeamLink>* Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
 	{
 		return (InTeamLink->FirstTeam == FirstTeam && InTeamLink->SecondTeam == SecondTeam)
 			|| (InTeamLink->FirstTeam == SecondTeam && InTeamLink->SecondTeam == FirstTeam);
@@ -60,7 +60,7 @@ bool UCppTeamSubsystem::ResolveRelationship(TScriptInterface<ICppEntity> InFirst
 		OutRelationship = ECppTeamRelationship::Friendly;
 		return true;
 	}
-	const UCppTeamLink* const* Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
+	const TObjectPtr<UCppTeamLink>* Found = Links.FindByPredicate([FirstTeam, SecondTeam](UCppTeamLink* InTeamLink)
 	{
 		return (InTeamLink->FirstTeam == FirstTeam && InTeamLink->SecondTeam == SecondTeam)
 			|| (InTeamLink->FirstTeam == SecondTeam && InTeamLink->SecondTeam == FirstTeam);
@@ -108,12 +108,12 @@ bool UCppTeamSubsystem::IsHostile(TScriptInterface<ICppEntity> InFirstEntity, TS
 
 UCppTeam* UCppTeamSubsystem::CreateTeam(const FName& InName)
 {
-	if (UCppTeam** Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; }))
+	if (TObjectPtr<UCppTeam>* Found = Teams.FindByPredicate([&InName](UCppTeam* InTeam) { return InTeam->Name == InName; }))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UCppTeamSubsystem::CreateTeam: Team '%s' already exists, returned this team"), *InName.ToString());
 		return *Found;
 	}
-	UCppTeam* NewTeam = NewObject<UCppTeam>();
+	UCppTeam* NewTeam = NewObject<UCppTeam>(this);
 	NewTeam->Name = InName;
 	Teams.Add(NewTeam);
 	return NewTeam;
@@ -132,7 +132,7 @@ UCppTeamLink* UCppTeamSubsystem::CreateTeamLink(UCppTeam* InFirstTeam, UCppTeam*
 			*InFirstTeam->Name.ToString());
 		return nullptr;
 	}
-	if (UCppTeamLink** Found = Links.FindByPredicate([InFirstTeam, InSecondTeam](UCppTeamLink* InTeamLink)
+	if (TObjectPtr<UCppTeamLink>* Found = Links.FindByPredicate([InFirstTeam, InSecondTeam](UCppTeamLink* InTeamLink)
 	{
 		return (InTeamLink->FirstTeam == InFirstTeam || InTeamLink->FirstTeam == InSecondTeam)
 			&& (InTeamLink->SecondTeam == InFirstTeam || InTeamLink->SecondTeam == InSecondTeam);
@@ -143,7 +143,7 @@ UCppTeamLink* UCppTeamSubsystem::CreateTeamLink(UCppTeam* InFirstTeam, UCppTeam*
 			*InSecondTeam->Name.ToString());
 		return *Found;
 	}
-	UCppTeamLink* NewLink = NewObject<UCppTeamLink>();
+	UCppTeamLink* NewLink = NewObject<UCppTeamLink>(this);
 	NewLink->FirstTeam = InFirstTeam;
 	NewLink->SecondTeam = InSecondTeam;
 	NewLink->Relationship = InTeamRelationship;

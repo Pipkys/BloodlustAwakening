@@ -1,4 +1,4 @@
-﻿#include "BloodlustAwakening/AI/CppAIController.h"
+#include "BloodlustAwakening/AI/CppAIController.h"
 
 ACppAIController::ACppAIController()
 {
@@ -38,10 +38,12 @@ float ACppAIController::GetAcceptableRadius() const
 
 void ACppAIController::SetCurrentTarget(AActor* InActor)
 {
+	CurrentTarget = InActor;
 	Blackboard->SetValueAsObject("CurrentTarget", InActor);
 }
 
 void ACppAIController::SetAcceptableRadius(float InAcceptableRadius)
 {
+	AcceptableRadius = InAcceptableRadius;
 	Blackboard->SetValueAsFloat("AcceptableRadius", InAcceptableRadius);
 }

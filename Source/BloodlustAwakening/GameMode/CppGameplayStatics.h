@@ -29,7 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	static inline bool IsInvincible(TScriptInterface<ICppEntity> InEntity)
 	{
-		return !Cast<ICppDamageable>(InEntity.GetInterface());
+		UObject* Object = InEntity.GetObject();
+		return Object && !Object->Implements<UCppDamageable>();
 	}
 
 public:

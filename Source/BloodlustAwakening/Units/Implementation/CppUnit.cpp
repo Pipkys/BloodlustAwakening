@@ -71,7 +71,7 @@ void ACppUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	TeamSubsystem = GetWorld()->GetSubsystem<UCppTeamSubsystem>();
-	AIController = (ACppAIController*)GetController();
+	AIController = Cast<ACppAIController>(GetController());
 }
 
 void ACppUnit::Tick(float DeltaTime)

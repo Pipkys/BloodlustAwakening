@@ -30,4 +30,10 @@ public:
 	{ 
 		PURE_VIRTUAL(ACppCellGrid::GridToWorld) return FVector (); 
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "Transformation")
+	inline FVector GridToWorldP(FIntPoint InCoords) const
+	{
+		return GridToWorld(InCoords.X, InCoords.Y);
+	}
 };

@@ -8,13 +8,14 @@
 ACppProjectile::ACppProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>("RootComponent");
-	RootComponent = Root;
+	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
 	OverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
 	OverlapComponent->SetupAttachment(RootComponent);
 	OverlapComponent->SetCollisionObjectType(ECC_Projectile);
 	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	OverlapComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Overlap);
+	OverlapComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Overlap);
 	OverlapComponent->SetCollisionResponseToChannel(ECC_Building, ECR_Overlap);
 	OverlapComponent->SetCollisionResponseToChannel(ECC_Unit, ECR_Overlap);
 	OverlapComponent->SetCanEverAffectNavigation(false);

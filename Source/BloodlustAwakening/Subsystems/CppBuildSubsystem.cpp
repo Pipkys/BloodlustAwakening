@@ -52,7 +52,7 @@ ACppTower* UCppBuildSubsystem::BuildTower(AActor* InOwner,
 	const TArray<ACppCell*>& InOccupiedCells,
 	TSubclassOf<ACppTower> InClass,
 	const FTransform& InTransform,
-	const FName& InTeam)
+	const FName& InTeamName)
 {
 	for (ACppCell* Cell : InOccupiedCells)
 	{
@@ -61,7 +61,7 @@ ACppTower* UCppBuildSubsystem::BuildTower(AActor* InOwner,
 	FCppTowerSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = InOwner;
 	SpawnParameters.Instigator = InOwner ? InOwner->GetInstigator() : nullptr;
-	SpawnParameters.Team = InOccupiedCells.Last()->GetWorld()->GetSubsystem<UCppTeamSubsystem>()->GetTeam(InTeam);
+	SpawnParameters.Team = InOccupiedCells.Last()->GetWorld()->GetSubsystem<UCppTeamSubsystem>()->GetTeam(InTeamName);
 	ACppTower* Tower = UCppGameplayStatics::SpawnTower(InOccupiedCells.Last()->GetWorld(),
 		InClass,
 		InTransform,

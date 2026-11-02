@@ -32,5 +32,5 @@ public:
 		const TArray<ACppCell*>& InOccupiedCells,
 		TSubclassOf<ACppTower> InClass,
 		const FTransform& InTransform,
-		const FName& InTeam);
+		const FName& InTeamName);
 };

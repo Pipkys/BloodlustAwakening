@@ -10,33 +10,41 @@ ACppUnit::ACppUnit()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.05f;
+
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = ACppAIController::StaticClass();
+
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	StaticMeshComponent->SetupAttachment(RootComponent);
 	StaticMeshComponent->SetCollisionObjectType(ECC_Unit);
 	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	StaticMeshComponent->SetCanEverAffectNavigation(false);
+
 	TeamComponent = CreateDefaultSubobject<UCppTeamComponent>("TeamComponent");
 	StatsComponent = CreateDefaultSubobject<UCppStatsComponent>("StatsComponent");
 	HealthComponent = CreateDefaultSubobject<UCppHealthComponent>("HealthComponent");
 	AttackComponent = CreateDefaultSubobject<UCppAttackComponent>("AttackComponent");
+
 	UCapsuleComponent* BodyComponent = GetCapsuleComponent();
 	BodyComponent->SetCollisionObjectType(ECC_Unit);
 	BodyComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BodyComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BodyComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Overlap);
+	BodyComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Overlap);
 	BodyComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	BodyComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	BodyComponent->SetCollisionResponseToChannel(ECC_Building, ECR_Block);
 	BodyComponent->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	BodyComponent->SetCollisionResponseToChannel(ECC_Level, ECR_Block);
 	BodyComponent->SetCanEverAffectNavigation(false);
+
 	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
 	SkeletalMeshComponent->SetCollisionObjectType(ECC_Unit);
 	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SkeletalMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SkeletalMeshComponent->SetCanEverAffectNavigation(false);
+
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	MovementComponent->UpdatedComponent = GetCapsuleComponent();
 	MovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -50,6 +58,7 @@ ACppUnit::ACppUnit()
 	MovementComponent->bUseControllerDesiredRotation = true;
 	MovementComponent->JumpZVelocity = 600.0f;
 	MovementComponent->AirControl = 0.05f;
+
 	AttackPointComponent = CreateDefaultSubobject<USphereComponent>("AttackPointComponent");
 	AttackPointComponent->SetupAttachment(RootComponent);
 	AttackPointComponent->SetCollisionObjectType(ECC_Trigger);

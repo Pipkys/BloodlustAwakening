@@ -175,15 +175,12 @@ void ACppPlayerController::BuildSelectedBuilding() const
 {
 	if (!IsBuildingBlueprintSelected())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not selected building blueprint"));
 		return;
 	}
 
 	int32 BuildingSizeInCells = ((ACppBuilding*)CurrentBuildingBlueprint->GetDefaultObject())->GetSizeInCells();
 	if (MarkedCells.Num() != BuildingSizeInCells * BuildingSizeInCells)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Marked cells not equals building size * building size: cells count: '%i', building size: '%i'"),
-			MarkedCells.Num(), BuildingSizeInCells);
 		return;
 	}
 
@@ -191,30 +188,13 @@ void ACppPlayerController::BuildSelectedBuilding() const
 	{
 		if (MarkedCell->bIsOccupied)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Marked cell is occupied already"));
 			return;
 		}
 	}
 
-	ACppCellGrid* Grid = MarkedCells.Last()->GetGrid();
-	ACppCell* LeftCorner = MarkedCells[0];
-	ACppCell* RightCorner = MarkedCells.Last();
-	FVector LeftCornerLocation = Grid->GridToWorldP(LeftCorner->Coords);
-	FVector RightCornerLocation = Grid->GridToWorldP(RightCorner->Coords);
-
-	UE_LOG(LogTemp, Warning, TEXT("Left corner: '%f', '%f', '%f'"), LeftCornerLocation.X, LeftCornerLocation.Y, LeftCornerLocation.Z);
-	UE_LOG(LogTemp, Warning, TEXT("Right corner: '%f', '%f', '%f'"), RightCornerLocation.X, RightCornerLocation.Y, RightCornerLocation.Z);
-
-	FTransform BuildingTransform;
-	BuildingTransform.SetLocation(FVector((RightCornerLocation.X - LeftCornerLocation.X) / 2.f + LeftCornerLocation.X,
-		(RightCornerLocation.Y - LeftCornerLocation.Y) / 2.f + LeftCornerLocation.Y,
-		0.f));
-
-	UE_LOG(LogTemp, Warning, TEXT("Building location: '%s'"), *BuildingTransform.GetLocation().ToString());
-
 	UCppBuildSubsystem::BuildTower(GetOwner(),
 		MarkedCells,
 		(TSubclassOf<ACppTower>)CurrentBuildingBlueprint,
-		BuildingTransform,
+		{},
 		"BloodRace");
 }

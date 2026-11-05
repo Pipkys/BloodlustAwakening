@@ -69,7 +69,21 @@ float UCppAttackComponent::GetRange() const
 bool UCppAttackComponent::IsTargetInAttackRange(AActor* InTarget, const FTransform& InPointTransform) const
 {
 	const float AttackRange = GetRange();
-	return FVector::DistSquared(InPointTransform.GetLocation(), InTarget->GetActorLocation()) <= AttackRange * AttackRange;
+	if (AttackRange <= 0.f)
+	{
+		return false;
+	}
+
+	const double CenterDistanceSquared = FVector::DistSquared2D(InPointTransform.GetLocation(), InTarget->GetActorLocation());
+
+	FVector TargetOrigin;
+	FVector TargetExtent;
+	InTarget->GetActorBounds(true, TargetOrigin, TargetExtent);
+	const double TargetRadius = FMath::Max(TargetExtent.X, TargetExtent.Y);
+	const double EffectiveRange = AttackRange + TargetRadius;
+	const double EffectiveRangeSquared = EffectiveRange * EffectiveRange;
+
+	return CenterDistanceSquared <= EffectiveRangeSquared;
 }
 
 bool UCppAttackComponent::IsCanAttack() const
@@ -125,6 +139,7 @@ void UCppAttackComponent::PerformMeleeAttack(AActor* InTarget, const FTransform&
 		}
 		return;
 	}
+
 	TArray<AActor*> Targets;
 	Targets.Reserve(8);
 	Targets.Add(InTarget);

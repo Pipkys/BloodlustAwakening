@@ -18,19 +18,19 @@ public:
 	static ACppSpawner* BuildSpawner(AActor* InOwner,
 		const TArray<ACppCell*>& InOccupiedCells,
 		TSubclassOf<ACppSpawner> InClass,
-		const FTransform& InTransform);
+		const FTransform& InOffset);
 
 	UFUNCTION(BlueprintCallable, Category = "Build")
 	static ACppDecoration* BuildDecoration(AActor* InOwner,
 		const TArray<ACppCell*>& InOccupiedCells,
 		TSubclassOf<ACppDecoration> InClass,
-		const FTransform& InTransform,
+		const FTransform& InOffset,
 		bool bSmallEnough);
 
 	UFUNCTION(BlueprintCallable, Category = "Build")
 	static ACppTower* BuildTower(AActor* InOwner,
 		const TArray<ACppCell*>& InOccupiedCells,
 		TSubclassOf<ACppTower> InClass,
-		const FTransform& InTransform,
+		const FTransform& InOffset,
 		const FName& InTeamName);
 };

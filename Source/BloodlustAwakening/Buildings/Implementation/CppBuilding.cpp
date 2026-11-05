@@ -101,9 +101,15 @@ float ACppBuilding::TakeDamage(float InBaseDamage,
 		: Super::TakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser);
 }
 
-void ACppBuilding::OnDie()
+void ACppBuilding::ForceDie()
 {
-	GetWorld()->GetSubsystem<UCppBuildingRegistry>()->UnregisterBuilding(this);
+	if (ICppDamageable* DamageableInterface = Cast<ICppDamageable>(this))
+	{
+		DamageableInterface->Die();
+		return;
+	}
+
+	Destroy();
 }
 
 int32 ACppBuilding::GetSizeInCells() const

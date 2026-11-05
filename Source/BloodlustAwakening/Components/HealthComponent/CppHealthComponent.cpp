@@ -3,6 +3,7 @@
 #include "BloodlustAwakening/Components/HealthComponent/CppHealthStats.h"
 #include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
+#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
 void UCppHealthComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnParameters& InSpawnParameters)
@@ -15,28 +16,7 @@ void UCppHealthComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnPa
 	}
 	MaxHealth = Stats->MaxHealth;
 	CurrentHealth = MaxHealth;
-
-	//// Upgrade/buff modifiers recompute the effective max health.
-	//if (AActor* Owner = GetOwner())
-	//{
-	//	if (UCppStatsComponent* StatsComponent = Owner->FindComponentByClass<UCppStatsComponent>())
-	//	{
-	//		StatsComponent->OnStatsChanged.AddDynamic(this, &UCppHealthComponent::HandleStatsChanged);
-	//	}
-	//}
 }
-
-//void UCppHealthComponent::RefreshMaxHealth()
-//{
-//	const AActor* Owner = GetOwner();
-//	const UCppStatsComponent* StatsComponent = Owner ? Owner->FindComponentByClass<UCppStatsComponent>() : nullptr;
-//
-//	MaxHealth = FMath::Max(1.0f, StatsComponent
-//		? StatsComponent->GetStatValue(CppStatIds::MaxHealth, BaseMaxHealth)
-//		: BaseMaxHealth);
-//
-//	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
-//}
 
 float UCppHealthComponent::GetMaxHealth() const
 {
@@ -73,36 +53,46 @@ float UCppHealthComponent::OnTakeDamage(float InBaseDamage,
 	AController* InInstigatorController,
 	AActor* InDamageCauser)
 {
-	if (IsDead())
+	if (UCppGameplayStatics::IsInvincible(this) || IsDead())
 	{
 		return 0.f;
 	}
-	const float AppliedDamage = FMath::Max(0.f, InBaseDamage);
-	CurrentHealth = FMath::Clamp(CurrentHealth - AppliedDamage, 0.f, MaxHealth);
+
+	const float ActualDamage = FMath::Max(0.f, InBaseDamage);
+	CurrentHealth = FMath::Clamp(CurrentHealth - ActualDamage, 0.f, MaxHealth);
+
 	FCppDamageEvent DamageEvent;
-	DamageEvent.Damage = AppliedDamage;
+	DamageEvent.Damage = ActualDamage;
 	DamageEvent.DamageEvent = &InDamageEvent;
 	DamageEvent.InstigatorController = InInstigatorController;
 	DamageEvent.DamageCauser = InDamageCauser;
 	OnTakeDamageEvent.Broadcast(DamageEvent);
+
 	if (CurrentHealth <= 0.f)
 	{
-		bDead = true;
-		OnDieEvent.Broadcast();
+		OnDie();
 	}
-	return AppliedDamage;
+
+	return ActualDamage;
+}
+
+void UCppHealthComponent::OnDie()
+{
+	bDead = true;
+	OnDieEvent.Broadcast(this);
+	GetOwner()->Destroy();
 }
 
 void UCppHealthComponent::SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName)
 {
 	FScriptDelegate Delegate;
 	Delegate.BindUFunction(InObject, InFunctionName);
-	OnTakeDamageEvent.AddUnique(Delegate);
+	OnTakeDamageEvent.Add(Delegate);
 }
 
 void UCppHealthComponent::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionName)
 {
 	FScriptDelegate Delegate;
 	Delegate.BindUFunction(InObject, InFunctionName);
-	OnDieEvent.AddUnique(Delegate);
+	OnDieEvent.Add(Delegate);
 }

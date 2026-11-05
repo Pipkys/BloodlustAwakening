@@ -109,7 +109,6 @@ void ACppUnit::Tick(float DeltaTime)
 			AActor::StaticClass(),
 			{ this },
 			AttackPointTransform.GetLocation()),
-			DetectionRange,
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)
 		{
@@ -225,7 +224,7 @@ void ACppUnit::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionN
 
 void ACppUnit::Die()
 {
-	// Death event is broadcast by the health component before we get here.
+	HealthComponent->OnDie();
 	Destroy();
 }
 

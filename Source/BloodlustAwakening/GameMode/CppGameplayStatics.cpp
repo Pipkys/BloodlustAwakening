@@ -97,7 +97,6 @@ AActor* UCppGameplayStatics::FindNearestActor(const TArray<AActor*>& InActors,
 }
 
 AActor* UCppGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
-	float InRange,
 	const FVector& InLocation,
 	const FCppActorPredicate& InPredicate)
 {
@@ -124,7 +123,6 @@ AActor* UCppGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& 
 }
 
 AActor* UCppGameplayStatics::FindNearestActorByPredicate(const TArray<AActor*>& InActors,
-	float InRange,
 	const FVector& InLocation,
 	const TFunctionRef<bool(AActor*)>& InPredicate)
 {

@@ -72,12 +72,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Searching")
 	static AActor* FindNearestActorByPredicate(const TArray<AActor*>& InActors,
-		float InRange,
 		const FVector& InLocation,
 		const FCppActorPredicate& InPredicate);
 
 	static AActor* FindNearestActorByPredicate(const TArray<AActor*>& InActors,
-		float InRange,
 		const FVector& InLocation,
 		const TFunctionRef<bool(AActor*)>& InPredicate);
 

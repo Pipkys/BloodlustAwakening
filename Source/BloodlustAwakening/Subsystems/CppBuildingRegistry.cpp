@@ -1,149 +1,156 @@
 #include "BloodlustAwakening/Subsystems/CppBuildingRegistry.h"
 
+#include "BloodlustAwakening/Components/HealthComponent/CppHealthComponent.h"
+#include "BloodlustAwakening/Interface/CppDamageable.h"
+
+TArray<TScriptInterface<ICppGridPlaceable>>& UCppBuildingRegistry::GetAllBuildingsOfClass(UObject* InWorldContextObject, TSubclassOf<AActor> InClass)
+{
+	if (!InClass)
+	{
+		UE_LOG(LogTemp,
+			Fatal,
+			TEXT("UCppBuildingRegistry::GetAllBuildingsOfClass: passed incorrect class"));
+	}
+
+	UCppBuildingRegistry* Instance = InWorldContextObject->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	const FTopLevelAssetPath& TypeId = GetTypeId(InClass);
+	if (FBuildingArray* Found = Instance->Buildings.Find(TypeId))
+	{
+		return Found->Data;
+	}
+
+	UE_LOG(LogTemp,
+		Fatal,
+		TEXT("UCppBuildingRegistry::GetAllBuildingsOfClass: passed unknown type '%s'"),
+		*TypeId.ToString());
+	return *(TArray<TScriptInterface<ICppGridPlaceable>>*)nullptr;
+}
+
 void UCppBuildingRegistry::RegisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding, const TArray<ACppCell*>& InOccupiedCells)
 {
 	UCppBuildingRegistry* Instance = InBuilding.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
-	if (Buildings.FindByPredicate([InBuilding](TScriptInterface<ICppGridPlaceable>& Building)
+	TMap<FTopLevelAssetPath, FBuildingArray>& Buildings = Instance->Buildings;
+	FTopLevelAssetPath TypeId = GetTypeId(InBuilding.GetObject()->GetClass());
+	if (FBuildingArray* FoundTypedBuildings = Buildings.Find(TypeId))
 	{
-		return Building == InBuilding;
-	}))
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::RegisterBuilding: Attempting to register already registred building"));
-		return;
+		TArray<TScriptInterface<ICppGridPlaceable>>& TypedBuildings = FoundTypedBuildings->Data;
+		if (TypedBuildings.FindByPredicate([InBuilding](TScriptInterface<ICppGridPlaceable>& Building)
+		{
+			return Building == InBuilding;
+		}))
+		{
+			UE_LOG(LogTemp,
+				Error,
+				TEXT("UCppBuildingRegistry::RegisterBuilding: attempting to register already registred building '%s'"),
+				*GetNameSafe(InBuilding.GetObject()));
+			return;
+		}
+		TypedBuildings.Add(InBuilding);
 	}
+	else
+	{
+		Buildings.Emplace(std::move(TypeId), {}).Data.Add(InBuilding);
+	}
+
 	InBuilding->GetOccupiedCells() = InOccupiedCells;
-	Buildings.Add(InBuilding);
+	if (ICppDamageable* Damageable = Cast<ICppDamageable>(InBuilding.GetObject()))
+	{
+		Damageable->SubscribeToOnDieEvent(Instance, TEXT("UnregisterOnDie"));
+	}
+	else
+	{
+		AActor* Actor = (AActor*)InBuilding.GetObject();
+		FScriptDelegate Delegate;
+		Delegate.BindUFunction(Instance, TEXT("UnregisterOnDestroyed"));
+		Actor->OnDestroyed.Add(Delegate);
+	}
 }
 
 void UCppBuildingRegistry::UnregisterBuilding(TScriptInterface<ICppGridPlaceable> InBuilding)
 {
 	UCppBuildingRegistry* Instance = InBuilding.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
-	for (int32 Index = 0; Index < Buildings.Num(); ++Index)
+	TMap<FTopLevelAssetPath, FBuildingArray>& Buildings = Instance->Buildings;
+	const FTopLevelAssetPath& TypeId = GetTypeId(InBuilding.GetObject()->GetClass());
+	if (FBuildingArray* FoundTypedBuildings = Buildings.Find(TypeId))
 	{
-		if (Buildings[Index] == InBuilding)
+		TArray<TScriptInterface<ICppGridPlaceable>>& TypedBuildings = FoundTypedBuildings->Data;
+		int32 Index = TypedBuildings.Find(InBuilding);
+		if (Index != INDEX_NONE)
 		{
-			Buildings.RemoveAt(Index);
+			TypedBuildings.RemoveAt(Index);
 			return;
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::UnregisterBuilding: Attempting to unregister not registred building"));
-}
 
-void UCppBuildingRegistry::RegisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration, const TArray<ACppCell*>& InOccupiedCells)
-{
-	UCppBuildingRegistry* Instance = InDecoration.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Decorations = Instance->Decorations;
-	if (Decorations.FindByPredicate([InDecoration](TScriptInterface<ICppGridPlaceable>& Decoration)
-	{
-		return Decoration == InDecoration;
-	}))
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::RegisterDecoration: Attempting to register already registred decoration"));
-		return;
-	}
-	InDecoration->GetOccupiedCells() = InOccupiedCells;
-	Decorations.Add(InDecoration);
-}
-
-void UCppBuildingRegistry::UnregisterDecoration(TScriptInterface<ICppGridPlaceable> InDecoration)
-{
-	UCppBuildingRegistry* Instance = InDecoration.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Decorations = Instance->Decorations;
-	for (int32 Index = 0; Index < Decorations.Num(); ++Index)
-	{
-		if (Decorations[Index] == InDecoration)
-		{
-			Decorations.RemoveAt(Index);
-			return;
-		}
-	}
-	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::UnregisterDecoration: Attempting to unregister not registred decoration"));
-}
-
-void UCppBuildingRegistry::RegisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner, const TArray<ACppCell*>& InOccupiedCells)
-{
-	UCppBuildingRegistry* Instance = InSpawner.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Spawners = Instance->Spawners;
-	if (Spawners.FindByPredicate([InSpawner](TScriptInterface<ICppGridPlaceable>& Spawner)
-	{
-		return Spawner == InSpawner;
-	}))
-	{
-		UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::RegisterSpawner: Attempting to register already registred spawner"));
-		return;
-	}
-	InSpawner->GetOccupiedCells() = InOccupiedCells;
-	Spawners.Add(InSpawner);
-}
-
-void UCppBuildingRegistry::UnregisterSpawner(TScriptInterface<ICppGridPlaceable> InSpawner)
-{
-	UCppBuildingRegistry* Instance = InSpawner.GetObject()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Spawners = Instance->Spawners;
-	for (int32 Index = 0; Index < Spawners.Num(); ++Index)
-	{
-		if (Spawners[Index] == InSpawner)
-		{
-			Spawners.RemoveAt(Index);
-			return;
-		}
-	}
-	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::UnregisterSpawner: Attempting to unregister not registred spawner"));
+	UE_LOG(LogTemp,
+		Error,
+		TEXT("UCppBuildingRegistry::UnregisterBuilding: passed not registered building '%s'"),
+		*GetNameSafe(InBuilding.GetObject()));
 }
 
 TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCells(const TArray<ACppCell*>& InOccupiedCells)
 {
-	UCppBuildingRegistry* Instance = InOccupiedCells.Last()->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
-	if (TScriptInterface<ICppGridPlaceable>* Building
-		= Buildings.FindByPredicate([InOccupiedCells](TScriptInterface<ICppGridPlaceable>& Building)
+	TArray<FIntPoint> CoordsArray;
+	CoordsArray.Reserve(InOccupiedCells.Num());
+	for (ACppCell* Cell : InOccupiedCells)
 	{
-		if (Building->GetOccupiedCells().Num() != InOccupiedCells.Num())
+		CoordsArray.Add(Cell->Coords);
+	}
+	return GetBuildingByOccupiedCellCoords(InOccupiedCells.Last(), CoordsArray);
+}
+
+TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCellCoords(UObject* InWorldContextObject, const TArray<FIntPoint>& InOccupiedCells)
+{
+	UCppBuildingRegistry* Instance = InWorldContextObject->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
+	TMap<FTopLevelAssetPath, FBuildingArray>& Buildings = Instance->Buildings;
+	for (TPair<FTopLevelAssetPath, FBuildingArray>& TypedBuildings : Buildings)
+	{
+		if (TScriptInterface<ICppGridPlaceable>* Building
+			= TypedBuildings.Value.Data.FindByPredicate([InOccupiedCells](TScriptInterface<ICppGridPlaceable>& Building)
 		{
-			return false;
-		}
-		for (int32 Index = 0; Index < Building->GetOccupiedCells().Num(); ++Index)
-		{
-			if (Building->GetOccupiedCells()[Index] != InOccupiedCells[Index])
+			TScriptInterface<ICppGridPlaceable>& ActualBuilding = Building;
+			if (ActualBuilding->GetOccupiedCells().Num() != InOccupiedCells.Num())
 			{
 				return false;
 			}
+			for (int32 Index = 0; Index < ActualBuilding->GetOccupiedCells().Num(); ++Index)
+			{
+				if (ActualBuilding->GetOccupiedCells()[Index]->Coords != InOccupiedCells[Index])
+				{
+					return false;
+				}
+			}
+			return true;
+		}))
+		{
+			return *Building;
 		}
-		return true;
-	}))
-	{
-		return *Building;
 	}
-	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::GetOccupiedCellsByBuilding: Attempting to get building by occupied cells which not stored"));
+	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::GetOccupiedCellsByBuilding: building not found by passed cell coords"));
 	return nullptr;
 }
 
-TScriptInterface<ICppGridPlaceable> UCppBuildingRegistry::GetBuildingByOccupiedCellCoords(UObject* InWorldContextObject,
-	const TArray<FIntPoint>& InOccupiedCells)
+FTopLevelAssetPath UCppBuildingRegistry::GetTypeId(const UClass* InClass)
 {
-	UCppBuildingRegistry* Instance = InWorldContextObject->GetWorld()->GetSubsystem<UCppBuildingRegistry>();
-	TArray<TScriptInterface<ICppGridPlaceable>>& Buildings = Instance->Buildings;
-	if (TScriptInterface<ICppGridPlaceable>* Building
-		= Buildings.FindByPredicate([InOccupiedCells](TScriptInterface<ICppGridPlaceable>& Building)
+	const UClass* Type = InClass;
+	while (Type && Cast<UBlueprintGeneratedClass>(Type))
 	{
-		if (Building->GetOccupiedCells().Num() != InOccupiedCells.Num())
+		const UClass* Super = Cast<UClass>(Type->GetSuperStruct());
+		if (!Super || Super == Type)
 		{
-			return false;
+			break;
 		}
-		for (int32 Index = 0; Index < Building->GetOccupiedCells().Num(); ++Index)
-		{
-			if (Building->GetOccupiedCells()[Index]->Coords != InOccupiedCells[Index])
-			{
-				return false;
-			}
-		}
-		return true;
-	}))
-	{
-		return *Building;
+		Type = Super;
 	}
-	UE_LOG(LogTemp, Error, TEXT("UCppBuildingRegistry::GetOccupiedCellsByBuilding: Attempting to get building by occupied cells which not stored"));
-	return nullptr;
+	return Type ? Type->GetClassPathName() : FTopLevelAssetPath();
+}
+
+void UCppBuildingRegistry::UnregisterOnDestroyed(AActor* InActor)
+{
+	UCppBuildingRegistry::UnregisterBuilding(InActor);
+}
+
+void UCppBuildingRegistry::UnregisterOnDie(UCppHealthComponent* InHealthComponent)
+{
+	UCppBuildingRegistry::UnregisterBuilding(InHealthComponent->GetOwner());
 }

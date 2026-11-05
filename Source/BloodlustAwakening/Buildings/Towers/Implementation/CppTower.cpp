@@ -12,7 +12,9 @@ ACppTower::ACppTower()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.05f;
+
 	HealthComponent = CreateDefaultSubobject<UCppHealthComponent>("HealthComponent");
+
 	AttackComponent = CreateDefaultSubobject<UCppAttackComponent>("AttackComponent");
 	AttackPointComponent = CreateDefaultSubobject<USphereComponent>("AttackPointComponent");
 	AttackPointComponent->SetupAttachment(RootComponent);
@@ -32,7 +34,6 @@ void ACppTower::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (IsDead())
 	{
-		Die();
 		return;
 	}
 	const FTransform& AttackPointTransform = AttackPointComponent->GetComponentTransform();
@@ -60,7 +61,6 @@ void ACppTower::Tick(float DeltaTime)
 			AActor::StaticClass(),
 			{ this },
 			AttackPointTransform.GetLocation()),
-			AttackRange,
 			AttackPointTransform.GetLocation(),
 			[this](AActor* InActor)
 		{
@@ -94,11 +94,10 @@ float ACppTower::TakeDamage(float InBaseDamage,
 	class AController* InEventInstigator,
 	AActor* InDamageCauser)
 {
-	if (UCppGameplayStatics::IsInvincible(this))
-	{
-		return 0.0f;
-	}
-	return HealthComponent ? HealthComponent->OnTakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser) : 0.f;
+	const float ActualDamage = Super::TakeDamage(InBaseDamage, InDamageEvent, InEventInstigator, InDamageCauser);
+	return HealthComponent
+		? HealthComponent->OnTakeDamage(ActualDamage, InDamageEvent, InEventInstigator, InDamageCauser)
+		: ActualDamage;
 }
 
 UCppHealthComponent* ACppTower::GetHealthComponent()
@@ -148,9 +147,7 @@ void ACppTower::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunction
 
 void ACppTower::Die()
 {
-	// Unregister from the building registry, then destroy. The death event
-	// itself is broadcast by the health component before we get here.
-	OnDie();
+	HealthComponent->OnDie();
 	Destroy();
 }
 

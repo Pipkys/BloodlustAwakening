@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	FOnTakeDamage OnTakeDamageEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDie);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDie, UCppHealthComponent*, InHealthComponent);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	FOnDie OnDieEvent;
 
@@ -59,6 +59,9 @@ public:
 		const FDamageEvent& InDamageEvent,
 		AController* InInstigatorController,
 		AActor* InDamageCauser);
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void OnDie();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Health")

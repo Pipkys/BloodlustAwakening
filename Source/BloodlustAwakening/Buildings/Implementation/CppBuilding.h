@@ -77,7 +77,7 @@ public:
 		AActor* InDamageCauser) override;
 
 protected:
-	void OnDie();
+	void ForceDie();
 
 public:
 	int32 GetSizeInCells() const;

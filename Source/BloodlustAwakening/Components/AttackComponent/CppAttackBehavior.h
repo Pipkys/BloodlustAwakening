@@ -16,9 +16,9 @@ class BLOODLUSTAWAKENING_API UCppAttackBehavior : public UObject
 {
 	GENERATED_BODY()
 
+protected:
 	AActor* Owner;
 	const FCppAttackParams* Params;
-protected:
 
 public:
 	void SetupBehavior(AActor* InOwner, const FInstancedStruct& InParams);

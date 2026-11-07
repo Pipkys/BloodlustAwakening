@@ -13,6 +13,7 @@ void UCppHealthComponent::SetupComponent(AActor* InOwner, const FCppActorSpawnPa
 		UE_LOG(LogTemp, Error, TEXT("UCppHealthComponent::SetupComponent: failed to load health stats for '%s'"), *GetNameSafe(InOwner));
 		return;
 	}
+
 	MaxHealth = Stats->MaxHealth;
 	CurrentHealth = MaxHealth;
 }
@@ -81,7 +82,7 @@ void UCppHealthComponent::OnDie()
 	{
 		bDead = true;
 		OnDieEvent.Broadcast(this);
-		Owner->Destroy();
+		GetOwner()->Destroy();
 	}
 }
 

@@ -31,7 +31,7 @@ FCppCircleGridData ACppHexGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCell
 	{
 		for (int32 CoordR = -InRadius; CoordR <= InRadius; ++CoordR)
 		{
-			if (!IsHexInRadius(InCellSize, InRadius, CoordQ, CoordR))
+			if (!IsHexInRadius(InRadius, CoordQ, CoordR))
 			{
 				continue;
 			}

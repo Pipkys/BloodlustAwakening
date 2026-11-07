@@ -15,7 +15,7 @@ void UCppGridSubsystem::SetupGenerator(ECppGridType InGridType,
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UCppGridSubsystem::SetupGenerator: Changing existing generator setup"));
 		FoundGeneratorData->Generator->Destroy();
-		*FoundGeneratorData = std::move(GeneratorData);
+		*FoundGeneratorData = MoveTemp(GeneratorData);
 		return;
 	}
 	GeneratorsData.Emplace(InGridType, MoveTemp(GeneratorData));

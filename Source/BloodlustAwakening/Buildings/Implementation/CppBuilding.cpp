@@ -1,6 +1,7 @@
 #include "BloodlustAwakening/Buildings/Implementation/CppBuilding.h"
 
 #include "BloodlustAwakening/Buildings/Implementation/CppBuildingStats.h"
+#include "BloodlustAwakening/Components/WorldUIComponent/CppWorldUIComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
@@ -37,6 +38,11 @@ ACppBuilding::ACppBuilding()
 	CapsuleComponent->SetCapsuleHalfHeight(88.0f);
 
 	NavModifierComponent = CreateDefaultSubobject<UNavModifierComponent>("NavModifierComponent");
+
+	WorldUIComponent = CreateDefaultSubobject<UCppWorldUIComponent>("WorldUIComponent");
+	WorldUIComponent->SetupAttachment(RootComponent);
+	WorldUIComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	WorldUIComponent->SetDrawSize({ 50.f, 50.f });
 }
 
 void ACppBuilding::BeginPlay()
@@ -88,6 +94,7 @@ void ACppBuilding::LoadStats()
 		SizeInCells = Stats->SizeInCells;
 		return;
 	}
+
 	UE_LOG(LogTemp, Error, TEXT("ACppBuilding::LoadStats: failed to load building stats"));
 }
 

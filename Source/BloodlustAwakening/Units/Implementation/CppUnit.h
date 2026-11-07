@@ -24,6 +24,8 @@
 
 #include "CppUnit.generated.h"
 
+class UCppWorldUIComponent;
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BloodlustAwakening")
 class BLOODLUSTAWAKENING_API ACppUnit :
 	public ACharacter,
@@ -58,6 +60,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Components")
 	TObjectPtr<USphereComponent> AttackPointComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower|Components")
+	TObjectPtr<UCppWorldUIComponent> WorldUIComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Target")
 	TObjectPtr<AActor> CurrentTarget;

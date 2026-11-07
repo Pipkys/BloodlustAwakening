@@ -19,6 +19,8 @@
 
 #include "CppBuilding.generated.h"
 
+class UCppWorldUIComponent;
+
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BloodlustAwakening")
 class BLOODLUSTAWAKENING_API ACppBuilding : public APawn, public ICppEntity, public ICppGridPlaceable
 {
@@ -42,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building|Components")
 	TObjectPtr<UNavModifierComponent> NavModifierComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower|Components")
+	TObjectPtr<UCppWorldUIComponent> WorldUIComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building|GridData")
 	TArray<ACppCell*> OccupiedCells;

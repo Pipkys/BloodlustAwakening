@@ -5,6 +5,7 @@
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitStats.h"
+#include "BloodlustAwakening/Components/WorldUIComponent/CppWorldUIComponent.h"
 
 ACppUnit::ACppUnit()
 {
@@ -65,6 +66,11 @@ ACppUnit::ACppUnit()
 	AttackPointComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AttackPointComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	AttackPointComponent->SetCanEverAffectNavigation(false);
+
+	WorldUIComponent = CreateDefaultSubobject<UCppWorldUIComponent>("WorldUIComponent");
+	WorldUIComponent->SetupAttachment(RootComponent);
+	WorldUIComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	WorldUIComponent->SetDrawSize({ 50.f, 50.f });
 }
 
 void ACppUnit::BeginPlay()

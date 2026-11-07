@@ -5,7 +5,6 @@
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
-#include "BloodlustAwakening/Subsystems/CppBuildingRegistry.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
 ACppBuilding::ACppBuilding()

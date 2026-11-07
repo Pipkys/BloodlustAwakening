@@ -24,7 +24,7 @@ FCppStats* UCppStatsComponent::GetCachedStats(ECppStatsType InType) const
 	{
 		UE_LOG(LogTemp,
 			Error,
-			TEXT("UCppStatsComponent::CacheStats: stats of type '%s' is not cached, owner is '%s'"),
+			TEXT("UCppStatsComponent::GetCachedStats: stats of type '%s' is not cached, owner is '%s'"),
 			*StaticEnum<ECppStatsType>()->GetDisplayNameTextByValue((int64)InType).ToString(),
 			*GetOwner()->GetName());
 		return nullptr;

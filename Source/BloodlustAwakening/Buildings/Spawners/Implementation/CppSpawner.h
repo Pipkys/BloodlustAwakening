@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Components/BoxComponent.h"
-#include "Runtime/NavigationSystem/Public/NavModifierComponent.h"
+#include "NavModifierComponent.h"
 
 #include "BloodlustAwakening/Interface/CppGridPlaceable.h"
 #include "BloodlustAwakening/Level/Grid/CppCell.h"

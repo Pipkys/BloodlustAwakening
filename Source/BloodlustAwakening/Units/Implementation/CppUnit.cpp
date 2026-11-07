@@ -1,11 +1,20 @@
 #include "BloodlustAwakening/Units/Implementation/CppUnit.h"
 
 #include "BloodlustAwakening/AI/CppAIController.h"
+#include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
+#include "BloodlustAwakening/Components/HealthComponent/CppHealthComponent.h"
+#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
+#include "BloodlustAwakening/Components/TeamComponent/CppTeamComponent.h"
+#include "BloodlustAwakening/Components/WorldUIComponent/CppWorldUIComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
+#include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
+#include "BloodlustAwakening/Subsystems/CppTeamSubsystem.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitStats.h"
-#include "BloodlustAwakening/Components/WorldUIComponent/CppWorldUIComponent.h"
+
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ACppUnit::ACppUnit()
 {
@@ -230,8 +239,10 @@ void ACppUnit::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionN
 
 void ACppUnit::Die()
 {
-	HealthComponent->OnDie();
-	Destroy();
+	if (HealthComponent)
+	{
+		HealthComponent->OnDie();
+	}
 }
 
 UCppAttackComponent* ACppUnit::GetAttackComponent()

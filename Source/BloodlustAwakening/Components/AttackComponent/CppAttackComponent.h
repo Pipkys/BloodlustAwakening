@@ -55,9 +55,6 @@ public:
 	void SetAttackTimerCallback(UObject* InObject, const FName& InFunctionName);
 
 private:
-	void PerformMeleeAttack(AActor* InTarget, const FTransform& InAttackPointTransform);
-	void PerformRangedAttack(AActor* InTarget, const FTransform& InAttackPointTransform);
-
 	void StartAttackCooldown();
 	void OnAttackCooldownFinished();
 };

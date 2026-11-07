@@ -1,7 +1,6 @@
 #include "BloodlustAwakening/Components/HealthComponent/CppHealthComponent.h"
 
 #include "BloodlustAwakening/Components/HealthComponent/CppHealthStats.h"
-#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
@@ -53,7 +52,7 @@ float UCppHealthComponent::OnTakeDamage(float InBaseDamage,
 	AController* InInstigatorController,
 	AActor* InDamageCauser)
 {
-	if (UCppGameplayStatics::IsInvincible(this) || IsDead())
+	if (UCppGameplayStatics::IsInvincible(GetOwner()) || IsDead())
 	{
 		return 0.f;
 	}
@@ -78,9 +77,12 @@ float UCppHealthComponent::OnTakeDamage(float InBaseDamage,
 
 void UCppHealthComponent::OnDie()
 {
-	bDead = true;
-	OnDieEvent.Broadcast(this);
-	GetOwner()->Destroy();
+	if (!bDead)
+	{
+		bDead = true;
+		OnDieEvent.Broadcast(this);
+		Owner->Destroy();
+	}
 }
 
 void UCppHealthComponent::SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName)

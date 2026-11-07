@@ -2,28 +2,23 @@
 
 #include "CoreMinimal.h"
 
-#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
-#include "BloodlustAwakening/AI/CppAIController.h"
-#include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
-#include "BloodlustAwakening/Components/HealthComponent/CppHealthComponent.h"
-#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
-#include "BloodlustAwakening/Components/TeamComponent/CppTeamComponent.h"
-#include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/Core/Team/CppTeam.h"
 #include "BloodlustAwakening/Interface/CppAttacker.h"
 #include "BloodlustAwakening/Interface/CppDamageable.h"
 #include "BloodlustAwakening/Interface/CppEntity.h"
 #include "BloodlustAwakening/Interface/CppMoveable.h"
-#include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
-#include "BloodlustAwakening/Subsystems/CppTeamSubsystem.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitSpawnParameters.h"
 
 #include "CppUnit.generated.h"
 
+class ACppAIController;
+class UCppAttackComponent;
+class UCppHealthComponent;
+class UCppStatsComponent;
+class UCppTeamComponent;
+class UCppTeamSubsystem;
 class UCppWorldUIComponent;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, ClassGroup = "BloodlustAwakening")
@@ -61,7 +56,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Components")
 	TObjectPtr<USphereComponent> AttackPointComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower|Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Components")
 	TObjectPtr<UCppWorldUIComponent> WorldUIComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Target")

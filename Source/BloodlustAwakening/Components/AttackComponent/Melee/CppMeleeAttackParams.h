@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 
-#include "StructUtils/InstancedStruct.h"
-
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackParams.h"
 
 #include "CppMeleeAttackParams.generated.h"

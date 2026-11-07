@@ -41,7 +41,7 @@ public:
 	TObjectPtr<AActor> CurrentTarget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower|Attack")
-	bool bLockedOnTarget;
+	bool bLockedOnTarget = false;
 
 protected:
 	void BeginPlay() override;

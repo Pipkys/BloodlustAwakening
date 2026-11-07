@@ -2,17 +2,12 @@
 
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackStats.h"
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackParams.h"
-#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
-#include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 #include "BloodlustAwakening/Interface/CppEntity.h"
-#include "BloodlustAwakening/Projectiles/CppProjectile.h"
-#include "BloodlustAwakening/Projectiles/CppProjectileSpawnParameters.h"
 #include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 
-#include "Kismet/GameplayStatics.h"
-#include "NiagaraFunctionLibrary.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 UCppAttackComponent::UCppAttackComponent()
 {

@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
-#include "Runtime/NavigationSystem/Public/NavModifierComponent.h"
+#include "NavModifierComponent.h"
 
 #include "BloodlustAwakening/Buildings/Implementation/CppBuildingSpawnParameters.h"
 #include "BloodlustAwakening/Interface/CppEntity.h"
@@ -14,7 +13,6 @@
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/Core/Team/CppTeam.h"
 #include "BloodlustAwakening/Level/Grid/CppCell.h"
-#include "BloodlustAwakening/Subsystems/CppStatsSubsystem.h"
 #include "BloodlustAwakening/Subsystems/CppTeamSubsystem.h"
 
 #include "CppBuilding.generated.h"
@@ -45,7 +43,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building|Components")
 	TObjectPtr<UNavModifierComponent> NavModifierComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower|Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building|Components")
 	TObjectPtr<UCppWorldUIComponent> WorldUIComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building|GridData")

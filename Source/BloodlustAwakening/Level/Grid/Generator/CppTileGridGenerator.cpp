@@ -2,9 +2,6 @@
 
 #include "BloodlustAwakening/Level/Grid/CppTileGrid.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-
 FCppCircleGridData ACppTileGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCell> InCellClass,
 	TSubclassOf<ACppCellGrid> InCellGridClass,
 	float InCellSize,
@@ -44,12 +41,15 @@ FCppCircleGridData ACppTileGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCel
 				TileSpawnParameters.Instigator = TileGrid->GetInstigator();
 				TileSpawnParameters.bNoFail = true;
 				ACppCell* Tile = GetWorld()->SpawnActor<ACppCell>(InCellClass, TileLocation, FRotator::ZeroRotator, TileSpawnParameters);
+#if WITH_EDITOR
 				Tile->SetActorLabel(FString::Printf(TEXT("Tile_%d_%d"), CoordX, CoordY));
+#endif
 				Tile->AttachToActor(TileGrid, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 				Tile->Coords = FIntPoint(CoordX, CoordY);
 				Tile->bIsOccupied = false;
 				GridTiles.Add(Tile->Coords, Tile);
 				InOnCellSpawnEvent.Execute(Tile);
+				InOnCellSpawnEvent.ExecuteIfBound(Tile);
 			}
 		}
 	}
@@ -94,12 +94,15 @@ FCppRectangleGridData ACppTileGridGenerator::GenerateRectangleGrid(TSubclassOf<A
 			TileSpawnParameters.Instigator = TileGrid->GetInstigator();
 			TileSpawnParameters.bNoFail = true;
 			ACppCell* Tile = GetWorld()->SpawnActor<ACppCell>(InCellClass, TileLocation, FRotator::ZeroRotator, TileSpawnParameters);
+#if WITH_EDITOR
 			Tile->SetActorLabel(FString::Printf(TEXT("Tile_%d_%d"), CoordX, CoordY));
+#endif
 			Tile->AttachToActor(TileGrid, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 			Tile->Coords = FIntPoint(CoordX, CoordY);
 			Tile->bIsOccupied = false;
 			GridTiles.Add(Tile->Coords, Tile);
 			InOnCellSpawnEvent.Execute(Tile);
+			InOnCellSpawnEvent.ExecuteIfBound(Tile);
 		}
 	}
 	return GridData;

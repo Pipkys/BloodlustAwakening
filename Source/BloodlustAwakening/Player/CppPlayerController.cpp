@@ -1,17 +1,13 @@
 #include "BloodlustAwakening/Player/CppPlayerController.h"
 
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
-#include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
-#include "BloodlustAwakening/Interface/CppAttacker.h"
-#include "BloodlustAwakening/Interface/CppEntity.h"
+#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
 #include "BloodlustAwakening/Level/Grid/CppCellGrid.h"
 #include "BloodlustAwakening/Player/CppCameraPawn.h"
 #include "BloodlustAwakening/Subsystems/CppBuildSubsystem.h"
 
-#include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "GameFramework/Character.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "Kismet/KismetSystemLibrary.h"

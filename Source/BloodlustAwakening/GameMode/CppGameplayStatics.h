@@ -12,7 +12,6 @@
 #include "BloodlustAwakening/Buildings/Spawners/Implementation/CppSpawner.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnit.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitSpawnParameters.h"
-#include "BloodlustAwakening/Core/Stats/CppStats.h"
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 

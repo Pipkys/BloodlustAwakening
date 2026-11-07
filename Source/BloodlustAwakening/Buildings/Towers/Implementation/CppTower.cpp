@@ -1,6 +1,5 @@
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
 
-#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerSpawnParameters.h"
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerStats.h"
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
@@ -148,7 +147,6 @@ void ACppTower::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunction
 void ACppTower::Die()
 {
 	HealthComponent->OnDie();
-	Destroy();
 }
 
 UCppAttackComponent* ACppTower::GetAttackComponent()

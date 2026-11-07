@@ -2,9 +2,6 @@
 
 #include "BloodlustAwakening/Level/Grid/CppHexGrid.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-
 FCppCircleGridData ACppHexGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCell> InCellClass,
 	TSubclassOf<ACppCellGrid> InCellGridClass,
 	float InCellSize,

@@ -5,14 +5,12 @@
 #include "BloodlustAwakening/Projectiles/CppProjectileSpawnParameters.h"
 #include "BloodlustAwakening/Projectiles/CppProjectile.h"
 
-#include "NiagaraFunctionLibrary.h"
-
 void UCppProjectileAttackBehavior::PerformAttack(AActor* InTarget, const FTransform& InAttackPoint)
 {
 	FCppProjectileAttackParams* AttackParams = GetParamsAs<FCppProjectileAttackParams>();
 	if (!AttackParams->ProjectileClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UCppAttackComponent::PerformRangedAttack: projectile class is not set on '%s'"), *GetNameSafe(Owner));
+		UE_LOG(LogTemp, Error, TEXT("UCppProjectileAttackBehavior::PerformAttack: projectile class is not set on '%s'"), *GetNameSafe(Owner));
 		return;
 	}
 

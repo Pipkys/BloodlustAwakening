@@ -6,7 +6,6 @@
 #include "BloodlustAwakening/Interface/CppEntity.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "NiagaraFunctionLibrary.h"
 
 void UCppMeleeAttackBehavior::PerformAttack(AActor* InTarget, const FTransform& InAttackPoint)
 {

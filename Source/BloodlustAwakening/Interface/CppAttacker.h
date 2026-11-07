@@ -7,6 +7,9 @@
 
 #include "CppAttacker.generated.h"
 
+class UCppAttackComponent;
+class USphereComponent;
+
 UINTERFACE(NotBlueprintable, BlueprintType)
 class BLOODLUSTAWAKENING_API UCppAttacker : public UInterface
 {

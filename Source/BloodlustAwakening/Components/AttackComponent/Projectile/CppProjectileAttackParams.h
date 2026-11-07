@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 
-#include "StructUtils/InstancedStruct.h"
-
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackParams.h"
 
 #include "CppProjectileAttackParams.generated.h"
+
+class ACppProjectile;
 
 USTRUCT(BlueprintType)
 struct FCppProjectileAttackParams : public FCppAttackParams

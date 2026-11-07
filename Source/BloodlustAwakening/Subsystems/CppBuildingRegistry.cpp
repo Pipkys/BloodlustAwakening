@@ -148,9 +148,23 @@ FTopLevelAssetPath UCppBuildingRegistry::GetTypeId(const UClass* InClass)
 void UCppBuildingRegistry::UnregisterOnDestroyed(AActor* InActor)
 {
 	UCppBuildingRegistry::UnregisterBuilding(InActor);
+	if (ICppGridPlaceable* GridPlaceableInterface = Cast<ICppGridPlaceable>(InActor))
+	{
+		for (ACppCell* OccupiedCell : GridPlaceableInterface->GetOccupiedCells())
+		{
+			OccupiedCell->bIsOccupied = false;
+		}
+	}
 }
 
 void UCppBuildingRegistry::UnregisterOnDie(UCppHealthComponent* InHealthComponent)
 {
 	UCppBuildingRegistry::UnregisterBuilding(InHealthComponent->GetOwner());
+	if (ICppGridPlaceable* GridPlaceableInterface = Cast<ICppGridPlaceable>(InHealthComponent->GetOwner()))
+	{
+		for (ACppCell* OccupiedCell : GridPlaceableInterface->GetOccupiedCells())
+		{
+			OccupiedCell->bIsOccupied = false;
+		}
+	}
 }

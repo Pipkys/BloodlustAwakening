@@ -43,7 +43,7 @@ ACppDecoration* UCppBuildSubsystem::BuildDecoration(AActor* InOwner,
 	const FTransform& InOffset,
 	bool bSmallEnough)
 {
-	if (bSmallEnough)
+	if (!bSmallEnough)
 	{
 		for (ACppCell* Cell : InOccupiedCells)
 		{

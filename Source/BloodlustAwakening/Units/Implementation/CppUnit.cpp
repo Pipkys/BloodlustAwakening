@@ -133,7 +133,7 @@ void ACppUnit::Setup(const FCppUnitSpawnParameters& InSpawnParameters)
 	LoadStats();
 	HealthComponent->SetupComponent(this, InSpawnParameters);
 	AttackComponent->SetupComponent(this, InSpawnParameters);
-	AIController->SetAcceptableRadius(AttackComponent->GetRange());
+	AIController->SetAcceptableRadius(AttackComponent->GetAttackParams().Range);
 }
 
 UStaticMeshComponent* ACppUnit::GetStaticMeshComponent()

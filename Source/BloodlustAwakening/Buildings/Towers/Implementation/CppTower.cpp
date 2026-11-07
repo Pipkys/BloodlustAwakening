@@ -54,7 +54,7 @@ void ACppTower::Tick(float DeltaTime)
 		{
 			ReleaseTarget();
 		}
-		const float AttackRange = AttackComponent->GetRange();
+		const float AttackRange = AttackComponent->GetAttackParams().Range;
 		AActor* NearestDamageableHostile = UCppGameplayStatics::FindNearestActorByPredicate(UCppGameplayStatics::FindActors(this,
 			AttackRange,
 			{ ECC_Unit },

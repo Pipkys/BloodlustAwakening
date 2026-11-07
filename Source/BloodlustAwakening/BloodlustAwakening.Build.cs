@@ -9,7 +9,7 @@ public class BloodlustAwakening : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(["Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"]);
-        PublicDependencyModuleNames.AddRange(["Niagara", "AIModule", "NavigationSystem", "UMG"]);
+        PublicDependencyModuleNames.AddRange(["Niagara", "AIModule", "NavigationSystem", "UMG", "StructUtils"]);
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

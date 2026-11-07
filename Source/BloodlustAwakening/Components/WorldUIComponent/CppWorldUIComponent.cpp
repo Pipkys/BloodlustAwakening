@@ -61,8 +61,8 @@ void UCppWorldUIComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	const float HealthPercent = HealthComp->GetMaxHealth() > 0.f
 		? HealthComp->GetCurrentHealth() / HealthComp->GetMaxHealth()
 		: 0.f;
-	const float CurrentDamage = AttackComp->GetDamage();
-	const float CurrentAttackSpeed = AttackComp->GetSpeed();
+	const float CurrentDamage = AttackComp->GetAttackParams().Damage;
+	const float CurrentAttackSpeed = AttackComp->GetAttackParams().Speed;
 
 	if (!FMath::IsNearlyEqual(HealthPercent, LastHealthPercent, 0.001f)
 		|| !FMath::IsNearlyEqual(CurrentDamage, LastDamage, 0.001f)

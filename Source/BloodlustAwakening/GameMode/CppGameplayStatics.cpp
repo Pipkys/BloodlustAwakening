@@ -74,9 +74,7 @@ TArray<AActor*> UCppGameplayStatics::FindActorsByPredicate(UObject* InWorldConte
 	return Result;
 }
 
-AActor* UCppGameplayStatics::FindNearestActor(const TArray<AActor*>& InActors,
-	float InRange,
-	const FVector& InLocation)
+AActor* UCppGameplayStatics::FindNearestActor(const TArray<AActor*>& InActors, const FVector& InLocation)
 {
 	AActor* NearestActor = nullptr;
 	float MinDistanceSquared = TNumericLimits<float>::Max();

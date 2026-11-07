@@ -132,7 +132,7 @@ FVector ACppHexGridGenerator::CalculateHexLocation(float InCellSize, int32 InCoo
 	return FVector(PosX, PosY, 0.0f);
 }
 
-bool ACppHexGridGenerator::IsHexInRadius(float InCellSize, int32 Radius, int32 InCoordQ, int32 InCoordR) const
+bool ACppHexGridGenerator::IsHexInRadius(int32 Radius, int32 InCoordQ, int32 InCoordR) const
 {
 	int CoordS = -InCoordQ - InCoordR;
 	int Dist = (FMath::Abs(InCoordQ) + FMath::Abs(InCoordR) + FMath::Abs(CoordS)) / 2;

@@ -31,11 +31,10 @@ FCppCircleGridData ACppTileGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCel
 	{
 		for (int32 CoordY = -InRadius; CoordY <= InRadius; ++CoordY)
 		{
-			const FVector TileLocation = GetActorLocation() + FVector(CoordX * InCellSize, CoordY * InCellSize, 0.f);
-			const FVector Offset = TileLocation - GetActorLocation();
 			const float DistSqr = (CoordX * CoordX) + (CoordY * CoordY);
 			if (DistSqr <= GridRadiusSqr)
 			{
+				const FVector TileLocation = GetActorLocation() + FVector(CoordX * InCellSize, CoordY * InCellSize, 0.f);
 				FActorSpawnParameters TileSpawnParameters;
 				TileSpawnParameters.Owner = TileGrid;
 				TileSpawnParameters.Instigator = TileGrid->GetInstigator();
@@ -48,7 +47,6 @@ FCppCircleGridData ACppTileGridGenerator::GenerateCircleGrid(TSubclassOf<ACppCel
 				Tile->Coords = FIntPoint(CoordX, CoordY);
 				Tile->bIsOccupied = false;
 				GridTiles.Add(Tile->Coords, Tile);
-				InOnCellSpawnEvent.Execute(Tile);
 				InOnCellSpawnEvent.ExecuteIfBound(Tile);
 			}
 		}
@@ -101,7 +99,6 @@ FCppRectangleGridData ACppTileGridGenerator::GenerateRectangleGrid(TSubclassOf<A
 			Tile->Coords = FIntPoint(CoordX, CoordY);
 			Tile->bIsOccupied = false;
 			GridTiles.Add(Tile->Coords, Tile);
-			InOnCellSpawnEvent.Execute(Tile);
 			InOnCellSpawnEvent.ExecuteIfBound(Tile);
 		}
 	}

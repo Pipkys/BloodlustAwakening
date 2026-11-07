@@ -18,7 +18,7 @@ void UCppGridSubsystem::SetupGenerator(ECppGridType InGridType,
 		*FoundGeneratorData = std::move(GeneratorData);
 		return;
 	}
-	GeneratorsData.Emplace(std::move(InGridType), std::move(GeneratorData));
+	GeneratorsData.Emplace(InGridType, MoveTemp(GeneratorData));
 }
 
 FCppCircleGridData UCppGridSubsystem::GenerateCircleGrid(ECppGridType InGridType,

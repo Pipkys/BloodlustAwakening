@@ -146,7 +146,10 @@ void ACppTower::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunction
 
 void ACppTower::Die()
 {
-	HealthComponent->OnDie();
+	if (HealthComponent)
+	{
+		HealthComponent->OnDie();
+	}
 }
 
 UCppAttackComponent* ACppTower::GetAttackComponent()

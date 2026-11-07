@@ -3,6 +3,7 @@
 #include "BloodlustAwakening/Subsystems/CppBuildingRegistry.h"
 #include "BloodlustAwakening/Subsystems/CppTeamSubsystem.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
+#include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerSpawnParameters.h"
 #include "BloodlustAwakening/Level/Grid/CppCellGrid.h"
 
 namespace
@@ -82,7 +83,6 @@ ACppDecoration* UCppBuildSubsystem::BuildDecoration(AActor* InOwner,
 	const FTransform& InOffset,
 	bool bSmallEnough)
 {
-	if (!bSmallEnough)
 	if (!ValidateCells(TEXT("BuildDecoration"), InOccupiedCells) || !InClass)
 	{
 		return nullptr;
@@ -111,10 +111,8 @@ ACppTower* UCppBuildSubsystem::BuildTower(AActor* InOwner,
 	const FTransform& InOffset,
 	const FName& InTeamName)
 {
-	for (ACppCell* Cell : InOccupiedCells)
 	if (!ValidateCells(TEXT("BuildTower"), InOccupiedCells) || !InClass)
 	{
-		Cell->bIsOccupied = true;
 		return nullptr;
 	}
 

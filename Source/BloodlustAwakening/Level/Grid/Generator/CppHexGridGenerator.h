@@ -27,5 +27,5 @@ public:
 
 protected:
 	FVector CalculateHexLocation(float InCellSize, int32 InCoordQ, int32 InCoordR) const;
-	bool IsHexInRadius(float InCellSize, int32 Radius, int32 InCoordQ, int32 InCoordR) const;
+	bool IsHexInRadius(int32 Radius, int32 InCoordQ, int32 InCoordR) const;
 };

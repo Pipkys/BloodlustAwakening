@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 
+#include "BloodlustAwakening/Components/AttackComponent/CppAttackParams.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 
 #include "Engine/DataTable.h"
@@ -15,8 +16,10 @@ struct BLOODLUSTAWAKENING_API FCppAttackStatsDatabaseRow : public FCppStatsDatab
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (BaseStruct = "/Script/BloodlustAwakening.CppAttackParams"))
-	FInstancedStruct AttackParams;
+	// TInstancedStruct<FCppAttackParams> сам выводит BaseStruct-метаданное
+	// из аргумента шаблона — ручной Meta=(BaseStruct=...) больше не нужен.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	TInstancedStruct<FCppAttackParams> AttackParams;
 
 public:
 	inline TArray<TPair<ECppStatsType, FCppStats*>> GetStatsSections() override

@@ -21,7 +21,7 @@ protected:
 	const FCppAttackParams* Params;
 
 public:
-	void SetupBehavior(AActor* InOwner, const FInstancedStruct& InParams);
+	void SetupBehavior(AActor* InOwner, const TInstancedStruct<FCppAttackParams>& InParams);
 
 public:
 	float GetRange() const;

@@ -4,7 +4,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 
-void UCppAttackBehavior::SetupBehavior(AActor* InOwner, const FInstancedStruct& InParams)
+void UCppAttackBehavior::SetupBehavior(AActor* InOwner, const TInstancedStruct<FCppAttackParams>& InParams)
 {
 	Owner = InOwner;
 	Params = InParams.GetPtr<FCppAttackParams>();

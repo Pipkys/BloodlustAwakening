@@ -21,12 +21,12 @@ void UCppWorldUIComponent::BeginPlay()
 
 	if (ICppDamageable* DamageableInterface = Cast<ICppDamageable>(GetOwner()))
 	{
-		HealthComp = DamageableInterface->GetHealthComponent();
+		HealthComponent = DamageableInterface->GetHealthComponent();
 	}
 
 	if (ICppAttacker* AttackerInterface = Cast<ICppAttacker>(GetOwner()))
 	{
-		AttackComp = AttackerInterface->GetAttackComponent();
+		AttackComponent = AttackerInterface->GetAttackComponent();
 	}
 
 	if (UUserWidget* UserWidgetObject = GetUserWidgetObject())
@@ -48,20 +48,20 @@ void UCppWorldUIComponent::BeginPlay()
 	}
 }
 
-void UCppWorldUIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UCppWorldUIComponent::TickComponent(float InDeltaTime, ELevelTick InTickType, FActorComponentTickFunction* InTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(InDeltaTime, InTickType, InTickFunction);
 
-	if (!HealthComp || !AttackComp)
+	if (!HealthComponent || !AttackComponent)
 	{
 		return;
 	}
 
-	const float HealthPercent = HealthComp->GetMaxHealth() > 0.f
-		? HealthComp->GetCurrentHealth() / HealthComp->GetMaxHealth()
+	const float HealthPercent = HealthComponent->GetMaxHealth() > 0.f
+		? HealthComponent->GetCurrentHealth() / HealthComponent->GetMaxHealth()
 		: 0.f;
-	const float CurrentDamage = AttackComp->GetAttackParams().Damage;
-	const float CurrentAttackSpeed = AttackComp->GetAttackParams().Speed;
+	const float CurrentDamage = AttackComponent->GetAttackParams().Damage;
+	const float CurrentAttackSpeed = AttackComponent->GetAttackParams().Speed;
 
 	if (!FMath::IsNearlyEqual(HealthPercent, LastHealthPercent, 0.001f)
 		|| !FMath::IsNearlyEqual(CurrentDamage, LastDamage, 0.001f)
@@ -75,32 +75,32 @@ void UCppWorldUIComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-FLinearColor UCppWorldUIComponent::GetHealthColor(float HealthPercent) const
+FLinearColor UCppWorldUIComponent::GetHealthColor(float InHealthPercent) const
 {
-	if (HealthPercent >= MediumHealthThreshold)
+	if (InHealthPercent >= MediumHealthThreshold)
 	{
 		return FullHealthColor;
 	}
-	else if (HealthPercent >= LowHealthThreshold)
+	else if (InHealthPercent >= LowHealthThreshold)
 	{
-		const float Alpha = (HealthPercent - LowHealthThreshold) / (MediumHealthThreshold - LowHealthThreshold);
+		const float Alpha = (InHealthPercent - LowHealthThreshold) / (MediumHealthThreshold - LowHealthThreshold);
 		return FLinearColor::LerpUsingHSV(MediumHealthColor, FullHealthColor, Alpha);
 	}
 	else
 	{
-		const float Alpha = HealthPercent / LowHealthThreshold;
+		const float Alpha = InHealthPercent / LowHealthThreshold;
 		return FLinearColor::LerpUsingHSV(LowHealthColor, MediumHealthColor, Alpha);
 	}
 }
 
-void UCppWorldUIComponent::UpdateHealthBar(float HealthPercent)
+void UCppWorldUIComponent::UpdateHealthBar(float InHealthPercent)
 {
-	HealthBar->SetPercent(HealthPercent);
-	HealthBar->SetFillColorAndOpacity(GetHealthColor(HealthPercent));
+	HealthBar->SetPercent(InHealthPercent);
+	HealthBar->SetFillColorAndOpacity(GetHealthColor(InHealthPercent));
 }
 
-void UCppWorldUIComponent::UpdateStatsDisplay(float Damage, float AttackSpeed)
+void UCppWorldUIComponent::UpdateStatsDisplay(float InDamage, float InAttackSpeed)
 {
-	DamageText->SetText(FText::AsNumber(Damage));
-	AttackSpeedText->SetText(FText::AsNumber(AttackSpeed));
+	DamageText->SetText(FText::AsNumber(InDamage));
+	AttackSpeedText->SetText(FText::AsNumber(InAttackSpeed));
 }

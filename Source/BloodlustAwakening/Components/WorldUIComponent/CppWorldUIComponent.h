@@ -47,10 +47,10 @@ public:
 
 private:
 	UPROPERTY()
-	TObjectPtr<UCppHealthComponent> HealthComp;
+	TObjectPtr<UCppHealthComponent> HealthComponent;
 
 	UPROPERTY()
-	TObjectPtr<UCppAttackComponent> AttackComp;
+	TObjectPtr<UCppAttackComponent> AttackComponent;
 
 	UPROPERTY()
 	TObjectPtr<UProgressBar> HealthBar;
@@ -68,10 +68,10 @@ private:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float InDeltaTime, ELevelTick InTickType, FActorComponentTickFunction* InTickFunction) override;
 
 private:
-	FLinearColor GetHealthColor(float HealthPercent) const;
-	void UpdateHealthBar(float HealthPercent);
-	void UpdateStatsDisplay(float Damage, float AttackSpeed);
+	FLinearColor GetHealthColor(float InHealthPercent) const;
+	void UpdateHealthBar(float InHealthPercent);
+	void UpdateStatsDisplay(float InDamage, float InAttackSpeed);
 };

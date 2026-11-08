@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 
+#include "BloodlustAwakening/Units/Implementation/CppUnit.h"
+
 #include "CppSpawnSquad.generated.h"
 
 USTRUCT(BlueprintType)
@@ -11,7 +13,7 @@ struct FCppSpawnSquad
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AActor>> Units;
+	TArray<TSubclassOf<ACppUnit>> Units;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseWeight = 1.0f;

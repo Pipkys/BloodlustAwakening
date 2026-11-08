@@ -151,13 +151,19 @@ ACppUnit* UCppGameplayStatics::SpawnUnit(UObject* InWorldContextObject,
 	const FTransform& InTransform,
 	const FCppUnitSpawnParameters& InSpawnParameters)
 {
+	FTransform AdjustedTransform;
+	AdjustedTransform.SetLocation({ InTransform.GetLocation().X, InTransform.GetLocation().Y, InTransform.GetLocation().Z
+		+ ((ACharacter*)InClass->GetDefaultObject())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() });
+
 	ACppUnit* Unit = (ACppUnit*)InWorldContextObject->GetWorld()->SpawnActor(InClass,
-		&InTransform,
+		&AdjustedTransform,
 		InSpawnParameters.ConvertToEngineType());
+
 	if (Unit)
 	{
 		Unit->Setup(InSpawnParameters);
 	}
+
 	return Unit;
 }
 

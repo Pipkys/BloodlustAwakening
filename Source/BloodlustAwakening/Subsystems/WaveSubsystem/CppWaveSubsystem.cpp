@@ -4,14 +4,11 @@
 #include "BloodlustAwakening/Subsystems/CppBuildingRegistry.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
 
-
 #include "Engine/World.h"
 #include "TimerManager.h"
 
 void UCppWaveSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
-	// Страховка: цикл активен, но таймер потерян (пересоздание мира,
-	// стриминг) — перезапускаем, чтобы волны не остановились навсегда.
 	if (!bWaveActive)
 	{
 		return;
@@ -33,8 +30,14 @@ void UCppWaveSubsystem::Deinitialize()
 	{
 		World->GetTimerManager().ClearTimer(WaveTimerHandle);
 	}
+
 	bWaveActive = false;
 	Super::Deinitialize();
+}
+
+float UCppWaveSubsystem::GetRemainingTimeToNextWave()
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(WaveTimerHandle);
 }
 
 void UCppWaveSubsystem::StartWave(int32 InWaveCount, float InDifficulty)
@@ -57,7 +60,6 @@ void UCppWaveSubsystem::StartWave(int32 InWaveCount, float InDifficulty)
 		return;
 	}
 
-	// Перезапуск поверх уже идущего цикла.
 	World->GetTimerManager().ClearTimer(WaveTimerHandle);
 
 	TotalWaves = InWaveCount;
@@ -71,8 +73,8 @@ void UCppWaveSubsystem::StartWave(int32 InWaveCount, float InDifficulty)
 		TEXT("UCppWaveSubsystem: start %d wave(s), difficulty %.2f, interval %.1fs"),
 		TotalWaves, CurrentDifficulty, WaveInterval);
 
-	// Первая волна — сразу.
-	BeginNextWave();
+	World->GetTimerManager().SetTimer(WaveTimerHandle, this,
+		&UCppWaveSubsystem::OnWaveTimerElapsed, WaveInterval, false);
 }
 
 void UCppWaveSubsystem::EndWave()
@@ -81,11 +83,13 @@ void UCppWaveSubsystem::EndWave()
 	{
 		World->GetTimerManager().ClearTimer(WaveTimerHandle);
 	}
+
 	bWaveActive = false;
 	TotalWaves = 0;
 	CurrentWave = 0;
 	SquadCount = 0;
 	EnemyCount = 0;
+
 	UE_LOG(LogTemp, Display, TEXT("UCppWaveSubsystem: wave cycle stopped"));
 }
 
@@ -95,13 +99,13 @@ void UCppWaveSubsystem::BeginNextWave()
 	{
 		return;
 	}
+
 	UWorld* World = GetWorld();
 	if (!World)
 	{
 		return;
 	}
 
-	// Последняя волна отработала свой интервал — завершаем цикл.
 	if (CurrentWave >= TotalWaves)
 	{
 		bWaveActive = false;
@@ -121,10 +125,8 @@ void UCppWaveSubsystem::BeginNextWave()
 		CurrentWave, TotalWaves, SquadCount);
 
 	EnemyCount = SpawnSquads(SquadCount);
-
 	OnWaveStarted.Broadcast(CurrentWave, SquadCount);
 
-	// Таймер до следующей волны.
 	World->GetTimerManager().SetTimer(WaveTimerHandle, this,
 		&UCppWaveSubsystem::OnWaveTimerElapsed, WaveInterval, false);
 }
@@ -136,8 +138,6 @@ void UCppWaveSubsystem::OnWaveTimerElapsed()
 
 int32 UCppWaveSubsystem::CalculateSquadCount(int32 Wave, float Difficulty) const
 {
-	// По мотивам Killing Floor: базовое число отрядов растёт с номером волны
-	// и умножается на множитель сложности, с потолком MaxSquadCount.
 	const float DifficultyScale = FMath::Max(Difficulty, 0.1f);
 	const float Raw = (BaseSquadCount + SquadGrowthPerWave * (Wave - 1)) * DifficultyScale;
 	return FMath::Clamp(FMath::RoundToInt(Raw), 1, MaxSquadCount);
@@ -171,6 +171,7 @@ int32 UCppWaveSubsystem::SpawnSquads(int32 Count)
 		}
 
 		FCppUnitSpawnParameters SpawnParameters;
+		SpawnParameters.Team = GetWorld()->GetSubsystem<UCppTeamSubsystem>()->GetTeam("HumanRace");
 		for (const TSubclassOf<ACppUnit>& UnitClass : Squad->Units)
 		{
 			if (UnitClass && UCppGameplayStatics::SpawnUnit(this, UnitClass, Spawner->GetTransform(), SpawnParameters))
@@ -179,6 +180,7 @@ int32 UCppWaveSubsystem::SpawnSquads(int32 Count)
 			}
 		}
 	}
+
 	return SpawnedMonsters;
 }
 
@@ -218,6 +220,7 @@ const FCppSpawnSquad* UCppWaveSubsystem::PickRandomSquad() const
 			return Valid[Index];
 		}
 	}
+
 	return Valid.Last();
 }
 

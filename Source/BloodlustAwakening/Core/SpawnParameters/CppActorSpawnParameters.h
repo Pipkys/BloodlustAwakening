@@ -21,7 +21,7 @@ public:
 	APawn* Instigator = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn|Parameters")
-	ESpawnActorCollisionHandlingMethod SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ESpawnActorCollisionHandlingMethod SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn|Parameters")
 	ESpawnActorScaleMethod TransformScaleMethod = ESpawnActorScaleMethod::MultiplyWithRoot;

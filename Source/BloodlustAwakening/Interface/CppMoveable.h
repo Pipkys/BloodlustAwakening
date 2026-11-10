@@ -10,12 +10,12 @@
 UINTERFACE(NotBlueprintable, BlueprintType)
 class BLOODLUSTAWAKENING_API UCppMoveable : public UInterface
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 };
 
 class BLOODLUSTAWAKENING_API ICppMoveable
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
 

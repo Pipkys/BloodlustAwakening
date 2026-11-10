@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Interface.h"
-
 #include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
 #include "BloodlustAwakening/Components/TeamComponent/CppTeamComponent.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/Core/Team/CppTeam.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "GameFramework/Actor.h"
+#include "UObject/Interface.h"
 
 #include "CppEntity.generated.h"
 
@@ -34,11 +34,21 @@ public:
     virtual UCppStatsComponent* GetStatsComponent() = 0;
 
     UFUNCTION(BlueprintCallable, Category = "Team")
-    virtual UCppTeam* GetTeam() const = 0;
+    virtual UCppTeam* GetTeam() const;
 
     UFUNCTION(BlueprintCallable, Category = "Team")
     virtual bool IsHostileTo(TScriptInterface<ICppEntity> InOther) const = 0;
 
 protected:
+    UCppTeamComponent* ResolveTeamComponent() const
+    {
+        return const_cast<ICppEntity*>(this)->GetTeamComponent();
+    }
+
     virtual void LoadStats() = 0;
 };
+
+inline UCppTeam* ICppEntity::GetTeam() const
+{
+    return ResolveTeamComponent()->Team;
+}

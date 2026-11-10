@@ -9,16 +9,6 @@
 
 ACppBuilding::ACppBuilding()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
-
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
-	StaticMeshComponent->SetupAttachment(RootComponent);
-	StaticMeshComponent->SetCollisionObjectType(ECC_Building);
-	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	StaticMeshComponent->SetCanEverAffectNavigation(false);
-
 	TeamComponent = CreateDefaultSubobject<UCppTeamComponent>("TeamComponent");
 	StatsComponent = CreateDefaultSubobject<UCppStatsComponent>("StatsComponent");
 
@@ -36,8 +26,6 @@ ACppBuilding::ACppBuilding()
 	CapsuleComponent->SetCapsuleRadius(34.0f);
 	CapsuleComponent->SetCapsuleHalfHeight(88.0f);
 
-	NavModifierComponent = CreateDefaultSubobject<UNavModifierComponent>("NavModifierComponent");
-
 	WorldUIComponent = CreateDefaultSubobject<UCppWorldUIComponent>("WorldUIComponent");
 	WorldUIComponent->SetupAttachment(RootComponent);
 	WorldUIComponent->SetWidgetSpace(EWidgetSpace::Screen);
@@ -48,11 +36,6 @@ void ACppBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 	TeamSubsystem = GetWorld()->GetSubsystem<UCppTeamSubsystem>();
-}
-
-void ACppBuilding::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ACppBuilding::Setup(const FCppBuildingSpawnParameters& InSpawnParameters)
@@ -74,11 +57,6 @@ UCppTeamComponent* ACppBuilding::GetTeamComponent()
 UCppStatsComponent* ACppBuilding::GetStatsComponent()
 {
 	return StatsComponent;
-}
-
-UCppTeam* ACppBuilding::GetTeam() const
-{
-	return TeamComponent->Team;
 }
 
 bool ACppBuilding::IsHostileTo(TScriptInterface<ICppEntity> InOther) const
@@ -116,14 +94,4 @@ void ACppBuilding::ForceDie()
 	}
 
 	Destroy();
-}
-
-int32 ACppBuilding::GetSizeInCells() const
-{
-	return SizeInCells;
-}
-
-TArray<ACppCell*>& ACppBuilding::GetOccupiedCells()
-{
-	return OccupiedCells;
 }

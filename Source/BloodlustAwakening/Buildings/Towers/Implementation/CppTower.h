@@ -1,8 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 
-#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 
 #include "BloodlustAwakening/Buildings/Implementation/CppBuilding.h"
@@ -12,10 +11,6 @@
 #include "BloodlustAwakening/Interface/CppEntity.h"
 #include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
 #include "BloodlustAwakening/Components/HealthComponent/CppHealthComponent.h"
-#include "BloodlustAwakening/Components/StatsComponent/CppStatsComponent.h"
-#include "BloodlustAwakening/Components/TeamComponent/CppTeamComponent.h"
-#include "BloodlustAwakening/Core/Stats/CppStats.h"
-#include "BloodlustAwakening/Core/Team/CppTeam.h"
 
 #include "CppTower.generated.h"
 
@@ -44,7 +39,6 @@ public:
 	bool bLockedOnTarget = false;
 
 protected:
-	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
 public:
@@ -61,15 +55,6 @@ public:
 
 public:
 	UCppHealthComponent* GetHealthComponent() override;
-	float GetMaxHealth() const override;
-	void SetMaxHealth(float InMaxHealth) override;
-	float GetCurrentHealth() const override;
-	void SetCurrentHealth(float InCurrentHealth) override;
-	bool IsAlive() const override;
-	bool IsDead() const override;
-	void SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName) override;
-	void SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionName) override;
-	void Die() override;
 
 public:
 	UCppAttackComponent* GetAttackComponent() override;
@@ -77,7 +62,4 @@ public:
 	AActor* GetCurrentTarget() const override;
 	void LockOnTarget(AActor* InTarget) override;
 	void ReleaseTarget() override;
-	bool IsTargetInAttackRange(AActor* InTarget, const FTransform& InAttackPointTransform) const override;
-	bool IsCanAttack() const override;
-	bool IsCanAttackTarget(AActor* InTarget, const FTransform& InAttackPointTransform) const override;
 };

@@ -2,9 +2,9 @@
 
 #include "CoreMinimal.h"
 
-#include "UObject/Interface.h"
-
 #include "BloodlustAwakening/Level/Grid/CppCell.h"
+
+#include "UObject/Interface.h"
 
 #include "CppGridPlaceable.generated.h"
 

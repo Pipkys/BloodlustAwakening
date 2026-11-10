@@ -3,6 +3,7 @@
 ACppAIController::ACppAIController()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
 	BrainComponent = BehaviorTreeComponent;
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>("BlackboardComponent");
@@ -11,10 +12,12 @@ ACppAIController::ACppAIController()
 void ACppAIController::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (BlackboardData)
 	{
 		Blackboard->InitializeBlackboard(*BlackboardData);
 	}
+
 	if (BehaviorTreeAsset)
 	{
 		RunBehaviorTree(BehaviorTreeAsset);

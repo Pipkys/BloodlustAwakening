@@ -97,6 +97,7 @@ void ACppUnit::Tick(float DeltaTime)
 		Die();
 		return;
 	}
+
 	const FTransform& AttackPointTransform = AttackPointComponent->GetComponentTransform();
 	if (IsValid(CurrentTarget))
 	{
@@ -118,6 +119,7 @@ void ACppUnit::Tick(float DeltaTime)
 		{
 			ReleaseTarget();
 		}
+
 		AActor* NearestDamageableHostile = UCppGameplayStatics::FindNearestActorByPredicate(UCppGameplayStatics::FindActors(this,
 			DetectionRange,
 			{ ECC_Building },
@@ -129,6 +131,7 @@ void ACppUnit::Tick(float DeltaTime)
 		{
 			return IsHostileTo(InActor) && !UCppGameplayStatics::IsInvincible(InActor);
 		});
+
 		if (IsValid(NearestDamageableHostile))
 		{
 			LockOnTarget(NearestDamageableHostile);
@@ -158,11 +161,6 @@ UCppTeamComponent* ACppUnit::GetTeamComponent()
 UCppStatsComponent* ACppUnit::GetStatsComponent()
 {
 	return StatsComponent;
-}
-
-UCppTeam* ACppUnit::GetTeam() const
-{
-	return TeamComponent->Team;
 }
 
 bool ACppUnit::IsHostileTo(TScriptInterface<ICppEntity> InOther) const
@@ -197,54 +195,6 @@ UCppHealthComponent* ACppUnit::GetHealthComponent()
 	return HealthComponent;
 }
 
-float ACppUnit::GetMaxHealth() const
-{
-	return HealthComponent->GetMaxHealth();
-}
-
-void ACppUnit::SetMaxHealth(float InMaxHealth)
-{
-	HealthComponent->SetMaxHealth(InMaxHealth);
-}
-
-float ACppUnit::GetCurrentHealth() const
-{
-	return HealthComponent->GetCurrentHealth();
-}
-
-void ACppUnit::SetCurrentHealth(float InCurrentHealth)
-{
-	HealthComponent->SetCurrentHealth(InCurrentHealth);
-}
-
-bool ACppUnit::IsAlive() const
-{
-	return HealthComponent->IsAlive();
-}
-
-bool ACppUnit::IsDead() const
-{
-	return HealthComponent->IsDead();
-}
-
-void ACppUnit::SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName)
-{
-	HealthComponent->SubscribeToOnTakeDamageEvent(InObject, InFunctionName);
-}
-
-void ACppUnit::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionName)
-{
-	HealthComponent->SubscribeToOnDieEvent(InObject, InFunctionName);
-}
-
-void ACppUnit::Die()
-{
-	if (HealthComponent)
-	{
-		HealthComponent->OnDie();
-	}
-}
-
 UCppAttackComponent* ACppUnit::GetAttackComponent()
 {
 	return AttackComponent;
@@ -270,19 +220,4 @@ void ACppUnit::ReleaseTarget()
 {
 	bLockedOnTarget = false;
 	CurrentTarget = nullptr;
-}
-
-bool ACppUnit::IsTargetInAttackRange(AActor* InTarget, const FTransform& InAttackPointTransform) const
-{
-	return AttackComponent->IsTargetInAttackRange(InTarget, InAttackPointTransform);
-}
-
-bool ACppUnit::IsCanAttack() const
-{
-	return AttackComponent->IsCanAttack();
-}
-
-bool ACppUnit::IsCanAttackTarget(AActor* InTarget, const FTransform& InAttackPointTransform) const
-{
-	return AttackComponent->IsCanAttackTarget(InTarget, InAttackPointTransform);
 }

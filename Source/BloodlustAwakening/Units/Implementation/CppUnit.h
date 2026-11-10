@@ -1,15 +1,15 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
-
-#include "Components/SphereComponent.h"
-#include "GameFramework/Character.h"
 
 #include "BloodlustAwakening/Interface/CppAttacker.h"
 #include "BloodlustAwakening/Interface/CppDamageable.h"
 #include "BloodlustAwakening/Interface/CppEntity.h"
 #include "BloodlustAwakening/Interface/CppMoveable.h"
 #include "BloodlustAwakening/Units/Implementation/CppUnitSpawnParameters.h"
+
+#include "Components/SphereComponent.h"
+#include "GameFramework/Character.h"
 
 #include "CppUnit.generated.h"
 
@@ -83,7 +83,6 @@ public:
 	UStaticMeshComponent* GetStaticMeshComponent() override;
 	UCppTeamComponent* GetTeamComponent() override;
 	UCppStatsComponent* GetStatsComponent() override;
-	UCppTeam* GetTeam() const override;
 	bool IsHostileTo(TScriptInterface<ICppEntity> InOther) const override;
 
 protected:
@@ -97,15 +96,6 @@ public:
 
 public:
 	UCppHealthComponent* GetHealthComponent() override;
-	float GetMaxHealth() const override;
-	void SetMaxHealth(float InMaxHealth) override;
-	float GetCurrentHealth() const override;
-	void SetCurrentHealth(float InCurrentHealth) override;
-	bool IsAlive() const override;
-	bool IsDead() const override;
-	void SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName) override;
-	void SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionName) override;
-	void Die() override;
 
 public:
 	UCppAttackComponent* GetAttackComponent() override;
@@ -113,7 +103,4 @@ public:
 	AActor* GetCurrentTarget() const override;
 	void LockOnTarget(AActor* InTarget) override;
 	void ReleaseTarget() override;
-	bool IsTargetInAttackRange(AActor* InTarget, const FTransform& InAttackPointTransform) const override;
-	bool IsCanAttack() const override;
-	bool IsCanAttackTarget(AActor* InTarget, const FTransform& InAttackPointTransform) const override;
 };

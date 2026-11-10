@@ -1,7 +1,6 @@
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTower.h"
 
 #include "BloodlustAwakening/Buildings/Towers/Implementation/CppTowerStats.h"
-#include "BloodlustAwakening/Components/AttackComponent/CppAttackComponent.h"
 #include "BloodlustAwakening/Core/Physics/CppCollisionChannels.h"
 #include "BloodlustAwakening/Core/Stats/CppStats.h"
 #include "BloodlustAwakening/GameMode/CppGameplayStatics.h"
@@ -13,8 +12,8 @@ ACppTower::ACppTower()
 	PrimaryActorTick.TickInterval = 0.05f;
 
 	HealthComponent = CreateDefaultSubobject<UCppHealthComponent>("HealthComponent");
-
 	AttackComponent = CreateDefaultSubobject<UCppAttackComponent>("AttackComponent");
+
 	AttackPointComponent = CreateDefaultSubobject<USphereComponent>("AttackPointComponent");
 	AttackPointComponent->SetupAttachment(RootComponent);
 	AttackPointComponent->SetCollisionObjectType(ECC_Trigger);
@@ -23,18 +22,15 @@ ACppTower::ACppTower()
 	AttackPointComponent->SetCanEverAffectNavigation(false);
 }
 
-void ACppTower::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ACppTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	if (IsDead())
 	{
 		return;
 	}
+
 	const FTransform& AttackPointTransform = AttackPointComponent->GetComponentTransform();
 	if (IsValid(CurrentTarget))
 	{
@@ -53,6 +49,7 @@ void ACppTower::Tick(float DeltaTime)
 		{
 			ReleaseTarget();
 		}
+
 		const float AttackRange = AttackComponent->GetAttackParams().Range;
 		AActor* NearestDamageableHostile = UCppGameplayStatics::FindNearestActorByPredicate(UCppGameplayStatics::FindActors(this,
 			AttackRange,
@@ -65,6 +62,7 @@ void ACppTower::Tick(float DeltaTime)
 		{
 			return IsHostileTo(InActor) && !UCppGameplayStatics::IsInvincible(InActor);
 		});
+
 		if (IsValid(NearestDamageableHostile))
 		{
 			LockOnTarget(NearestDamageableHostile);
@@ -75,6 +73,7 @@ void ACppTower::Tick(float DeltaTime)
 void ACppTower::Setup(const FCppBuildingSpawnParameters& InSpawnParameters)
 {
 	Super::Setup(InSpawnParameters);
+
 	HealthComponent->SetupComponent(this, InSpawnParameters);
 	AttackComponent->SetupComponent(this, InSpawnParameters);
 }
@@ -85,6 +84,7 @@ void ACppTower::LoadStats()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACppTower::LoadStats: failed to load tower stats"));
 	}
+
 	Super::LoadStats();
 }
 
@@ -102,54 +102,6 @@ float ACppTower::TakeDamage(float InBaseDamage,
 UCppHealthComponent* ACppTower::GetHealthComponent()
 {
 	return HealthComponent;
-}
-
-float ACppTower::GetMaxHealth() const
-{
-	return HealthComponent->GetMaxHealth();
-}
-
-void ACppTower::SetMaxHealth(float InMaxHealth)
-{
-	HealthComponent->SetMaxHealth(InMaxHealth);
-}
-
-float ACppTower::GetCurrentHealth() const
-{
-	return HealthComponent->GetCurrentHealth();
-}
-
-void ACppTower::SetCurrentHealth(float InCurrentHealth)
-{
-	HealthComponent->SetCurrentHealth(InCurrentHealth);
-}
-
-bool ACppTower::IsAlive() const
-{
-	return HealthComponent->IsAlive();
-}
-
-bool ACppTower::IsDead() const
-{
-	return HealthComponent->IsDead();
-}
-
-void ACppTower::SubscribeToOnTakeDamageEvent(UObject* InObject, const FName& InFunctionName)
-{
-	HealthComponent->SubscribeToOnTakeDamageEvent(InObject, InFunctionName);
-}
-
-void ACppTower::SubscribeToOnDieEvent(UObject* InObject, const FName& InFunctionName)
-{
-	HealthComponent->SubscribeToOnDieEvent(InObject, InFunctionName);
-}
-
-void ACppTower::Die()
-{
-	if (HealthComponent)
-	{
-		HealthComponent->OnDie();
-	}
 }
 
 UCppAttackComponent* ACppTower::GetAttackComponent()
@@ -177,19 +129,4 @@ void ACppTower::ReleaseTarget()
 {
 	bLockedOnTarget = false;
 	CurrentTarget = nullptr;
-}
-
-bool ACppTower::IsTargetInAttackRange(AActor* InTarget, const FTransform& InAttackPointTransform) const
-{
-	return AttackComponent->IsTargetInAttackRange(InTarget, InAttackPointTransform);
-}
-
-bool ACppTower::IsCanAttack() const
-{
-	return AttackComponent->IsCanAttack();
-}
-
-bool ACppTower::IsCanAttackTarget(AActor* InTarget, const FTransform& InAttackPointTransform) const
-{
-	return AttackComponent->IsCanAttackTarget(InTarget, InAttackPointTransform);
 }
